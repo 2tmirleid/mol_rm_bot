@@ -1,0 +1,43 @@
+# Min version you need for build project
+version: '3.0'
+
+services:
+  main:
+    # Name of main app container
+    container_name: impulse-mdt-telegram-bot
+    build:
+      context: .
+    env_file:
+      # File with environment variables
+      - .env
+    volumes:
+      # Main app dir
+      - .:/app
+      # Virtual environment dir
+      - /app/venv
+    ports:
+      # Reserve port for your needs (swagger for example)
+      - "7000:7000"
+    # The starting command to launch the bot
+    command: python3 src/main.py
+    depends_on:
+      # Your DBMS
+      - postgres
+    restart: always
+  postgres:
+    # Name of DBMS container
+    container_name: mdt-postgres
+    # Version of DBMS
+    image: postgres:12
+    env_file:
+      # File with environment variables
+      - .env
+    environment:
+      # Dir which writes DBMS data
+      PG_DATA: /var/lib/postgresql/data
+    ports:
+      # Ports for DBMS (PostgreSQL by default)
+      - "5432:5432"
+    volumes:
+      - /var/lib/postgresql/data
+    restart: always
