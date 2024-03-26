@@ -4,7 +4,7 @@ version: '3.0'
 services:
   main:
     # Name of main app container
-    container_name: impulse-mdt-telegram-bot
+    container_name: main-container
     build:
       context: .
     env_file:
@@ -26,7 +26,7 @@ services:
     restart: always
   postgres:
     # Name of DBMS container
-    container_name: mdt-postgres
+    container_name: postgres
     # Version of DBMS
     image: postgres:12
     env_file:
