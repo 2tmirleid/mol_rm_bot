@@ -4,7 +4,7 @@ version: '3.0'
 services:
   main:
     # Name of main app container
-    container_name: main-container
+    container_name: ${COMPOSE_PROJECT_NAME}
     build:
       context: .
     env_file:
@@ -17,7 +17,7 @@ services:
       - /app/venv
     ports:
       # Reserve port for your needs (swagger for example)
-      - "7000:7000"
+      - ${PORT}:${PORT}
     # The starting command to launch the bot
     command: python3 src/main.py
     depends_on:
@@ -26,7 +26,7 @@ services:
     restart: always
   postgres:
     # Name of DBMS container
-    container_name: postgres
+    container_name: ${COMPOSE_PROJECT_NAME}_db
     # Version of DBMS
     image: postgres:12
     env_file:
@@ -37,7 +37,7 @@ services:
       PG_DATA: /var/lib/postgresql/data
     ports:
       # Ports for DBMS (PostgreSQL by default)
-      - "5432:5432"
+      - ${DBMS_PORT}:${DBMS_PORT}
     volumes:
       - /var/lib/postgresql/data
     restart: always
