@@ -16,4 +16,4 @@ RUN pip3 install -r requirements.txt
 # Copying all app dirs/files
 COPY . .
 
-CMD ["python3", "src/main.py"]
+CMD ["python3", "main.py"]
