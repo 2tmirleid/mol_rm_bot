@@ -2,7 +2,7 @@
 <ul>
 <li>
     
-    $ git clone https://github.com/2tmirleid/aiogram_2tmirleid.git
+    $ git clone https://github.com/2tmirleid/ImpulseBotEngine.git
 
 </li>
 <li>
