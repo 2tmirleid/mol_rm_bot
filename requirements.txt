@@ -2,3 +2,5 @@ aiogram
 asyncio
 psycopg2-binary
 python-dotenv
+
+# !!! psycopg2-binary is lib for postgreSQL. You need replace it with lib which fits with yours DBMS
