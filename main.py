@@ -4,6 +4,8 @@ import os
 from aiogram import Bot, Dispatcher
 from dotenv import load_dotenv
 
+from src.example_dir import example_router
+
 """Main app class"""
 
 
@@ -17,7 +19,7 @@ class Main:
 
     # Method for getting app routers
     def get_routers(self):
-        ...
+        self.dp.include_router(example_router.router)
 
     def start(self):
         # Init logging
