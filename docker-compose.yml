@@ -9,7 +9,7 @@ services:
       context: .
     env_file:
       # File with environment variables
-      - .env-example
+      - .env
     volumes:
       # Main app dir
       - .:/app
@@ -19,7 +19,7 @@ services:
       # Reserve port for your needs (swagger for example)
       - ${PORT}:${PORT}
     # The starting command to launch the bot
-    command: python3 src/main.py
+    command: python3 main.py
     depends_on:
       # Your DBMS
       - ${DBMS}
@@ -31,13 +31,13 @@ services:
     image: ${DBMS}:${DBMS_VERSION}
     env_file:
       # File with environment variables
-      - .env-example
+      - .env
     environment:
       # Dir which writes DBMS data
       PG_DATA: /var/lib/postgresql/data
     ports:
       # Ports for DBMS (PostgreSQL by default)
-      - ${DBMS_PORT}:${DBMS_PORT}
+      - ${POSTGRES_PORT}:${POSTGRES_PORT}
     volumes:
       - /var/lib/postgresql/data
     restart: always
