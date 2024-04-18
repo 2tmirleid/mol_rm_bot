@@ -9,7 +9,7 @@ services:
       context: .
     env_file:
       # File with environment variables
-      - .env-example
+      - .env
     volumes:
       # Main app dir
       - .:/app
@@ -31,7 +31,7 @@ services:
     image: ${DBMS}:${DBMS_VERSION}
     env_file:
       # File with environment variables
-      - .env-example
+      - .env
     environment:
       # Dir which writes DBMS data
       PG_DATA: /var/lib/postgresql/data
