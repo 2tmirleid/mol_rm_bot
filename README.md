@@ -1,8 +1,8 @@
-<h2>Для развертывания сборки произвести следующие шаги:</h2>
+<h2>Для развертывания фреймворка произвести следующие шаги:</h2>
 <ul>
 <li>
     
-    $ git clone https://github.com/2tmirleid/ImpulseBotEngine.git
+    $ git clone https://github.com/2tmirleid/IBotEngine.git
 
 </li>
 <li>
