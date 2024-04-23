@@ -16,5 +16,7 @@ try:
         database=os.environ['POSTGRES_DB'],
         port=os.environ['POSTGRES_PORT'],
     )
+
+    cursor = conn.cursor()
 except Exception as e:
     print(f'Error while connecting to the database: {e}')
