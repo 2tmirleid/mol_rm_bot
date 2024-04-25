@@ -4,6 +4,7 @@ from aiogram import Bot, Dispatcher
 
 from aiogram.fsm.storage.memory import MemoryStorage
 
+from utils.ibot_engine_factory.date.date_formatter import IBotEngineDateFormatter
 from utils.ibot_engine_factory.orm.create_models import create_tables
 from utils.logger import Logger
 from utils.watcher import Watcher
@@ -17,9 +18,7 @@ class IBotEngineFactory:
                  middlewares: list = None,
                  models: list = None,
                  ) -> None:
-        self.date_format = "%Y-%m-%d %H:%M:%S"
-        self.current_time = time.localtime()
-        self.formatted_date = time.strftime(self.date_format, self.current_time)
+        self.date_formatter: IBotEngineDateFormatter = IBotEngineDateFormatter()
 
         self.storage = MemoryStorage()
 
@@ -39,22 +38,22 @@ class IBotEngineFactory:
         if self.routers:
             for router in self.routers:
                 self.dp.include_router(router)
-            print(f"[IBotEngine] - [{self.formatted_date}] - Initialized routers")
+            print(f"[IBotEngine] - [{await self.date_formatter.get_date()}] - Initialized routers")
 
         if self.scenes:
             for scene in self.scenes:
                 self.dp.include_router(scene)
-            print(f"[IBotEngine] - [{self.formatted_date}] - Initialized scenes")
+            print(f"[IBotEngine] - [{await self.date_formatter.get_date()}] - Initialized scenes")
 
         if self.middlewares:
             for middleware in self.middlewares:
                 self.dp.update.middleware(middleware)
-            print(f"[IBotEngine] - [{self.formatted_date}] - Initialized middlewares")
+            print(f"[IBotEngine] - [{await self.date_formatter.get_date()}] - Initialized middlewares")
 
         if self.models:
             for model in self.models:
                 create_tables(model)
-            print(f"[IBotEngine] - [{self.formatted_date}] - Initialized models")
+            print(f"[IBotEngine] - [{await self.date_formatter.get_date()}] - Initialized models")
 
         self.logger.log()
         self.watcher.watch()
