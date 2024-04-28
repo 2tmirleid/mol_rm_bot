@@ -13,8 +13,6 @@ services:
     volumes:
       # Main app dir
       - .:/app
-      # Virtual environment dir
-      - /app/venv
     ports:
       # Reserve port for your needs (swagger for example)
       - ${PORT}:${PORT}
