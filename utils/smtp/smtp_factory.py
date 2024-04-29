@@ -6,10 +6,14 @@ from email.mime.text import MIMEText
 from dotenv import load_dotenv, find_dotenv
 
 
-class EmailSender:
-    def __init__(self):
-        load_dotenv(find_dotenv())
+class IBotEngineSMTPFactory:
+    load_dotenv(find_dotenv())
 
+    def __init__(
+            self,
+            recipient,
+            subject = os.environ["SMTP_SUBJECT"]
+    ) -> None:
         self.smtp_server = os.environ["SMTP_SERVER"]
         self.smtp_port = int(os.environ["SMTP_PORT"])
         self.sender_email = os.environ["SMTP_SENDER_EMAIL"]
@@ -17,8 +21,8 @@ class EmailSender:
 
         self.msg = MIMEMultipart()
         self.msg['From'] = self.sender_email
-        self.msg['To'] = os.environ["SMTP_RECIPIENT_EMAIL"]
-        self.msg['Subject'] = os.environ["SMTP_SUBJECT"]
+        self.msg['To'] = recipient
+        self.msg['Subject'] = subject
 
     async def send_email(self, body):
         self.msg.attach(MIMEText(body, 'plain', 'utf-8'))

@@ -12,27 +12,27 @@ from utils.watcher import Watcher
 
 class IBotEngineFactory:
     def __init__(self,
-                 token: str,
-                 routers: list = None,
-                 scenes: list = None,
+                 token:       str,
+                 routers:     list = None,
+                 scenes:      list = None,
                  middlewares: list = None,
-                 models: list = None,
+                 models:      list = None,
                  ) -> None:
         self.date_formatter: IBotEngineDateFormatter = IBotEngineDateFormatter()
 
         self.storage = MemoryStorage()
 
         self.token = token
-        self.bot = Bot(token=self.token)
-        self.dp = Dispatcher(bot=self.bot)
+        self.bot   = Bot(token=self.token)
+        self.dp    = Dispatcher(bot=self.bot)
 
-        self.logger = Logger()
+        self.logger  = Logger()
         self.watcher = Watcher()
 
-        self.routers: list = routers if routers else []
-        self.scenes: list = scenes if scenes else []
+        self.routers:     list = routers if routers else []
+        self.scenes:      list = scenes if scenes else []
         self.middlewares: list = middlewares if middlewares else []
-        self.models: list = models if models else []
+        self.models:      list = models if models else []
 
     async def launch(self):
         if self.routers:
