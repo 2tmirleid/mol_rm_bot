@@ -14,14 +14,14 @@ class IBotEngineSMTPFactory:
             recipient,
             subject = os.environ["SMTP_SUBJECT"]
     ) -> None:
-        self.smtp_server = os.environ["SMTP_SERVER"]
-        self.smtp_port = int(os.environ["SMTP_PORT"])
-        self.sender_email = os.environ["SMTP_SENDER_EMAIL"]
+        self.smtp_server     = os.environ["SMTP_SERVER"]
+        self.smtp_port       = int(os.environ["SMTP_PORT"])
+        self.sender_email    = os.environ["SMTP_SENDER_EMAIL"]
         self.sender_password = os.environ["SMTP_SENDER_PASSWORD"]
 
-        self.msg = MIMEMultipart()
-        self.msg['From'] = self.sender_email
-        self.msg['To'] = recipient
+        self.msg            = MIMEMultipart()
+        self.msg['From']    = self.sender_email
+        self.msg['To']      = recipient
         self.msg['Subject'] = subject
 
     async def send_email(self, body):
