@@ -10,7 +10,7 @@ COPY requirements.txt ./
 RUN python3 -m venv venv
 
 # Activate virtual enviroment
-RUN source/bin/activate
+RUN source venv/bin/activate
 
 # Install dependencies
 RUN pip3 install -r requirements.txt
