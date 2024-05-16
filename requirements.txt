@@ -1,8 +1,6 @@
 aiogram~=3.4.1
-asyncio
+asyncio~=3.4.3
 psycopg2-binary
 python-dotenv~=1.0.1
 watchdog~=4.0.0
-# !!! psycopg2-binary is lib for postgreSQL. You need replace it with lib which fits with yours DBMS
-
-colorlog~=6.8.2
+psycopg2~=2.9.9

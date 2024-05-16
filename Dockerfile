@@ -6,6 +6,12 @@ WORKDIR /app
 # Copy txt file with dependencies
 COPY requirements.txt ./
 
+# Creating virtual enviroment
+RUN python3 -m venv venv
+
+# Activate virtual enviroment
+RUN source/bin/activate
+
 # Install dependencies
 RUN pip3 install -r requirements.txt
 
