@@ -3,4 +3,3 @@ asyncio~=3.4.3
 psycopg2-binary
 python-dotenv~=1.0.1
 watchdog~=4.0.0
-psycopg2~=2.9.9
