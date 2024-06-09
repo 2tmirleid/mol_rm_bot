@@ -5,7 +5,7 @@ from aiogram import Bot, Dispatcher
 from aiogram.fsm.storage.memory import MemoryStorage
 
 from utils.ibot_engine_factory.date.date_formatter import IBotEngineDateFormatter
-from utils.ibot_engine_factory.orm.create_models import create_tables
+from utils.ibot_engine_factory.orm.create_tables import create_tables
 from utils.logger import Logger
 from utils.watcher import Watcher
 
