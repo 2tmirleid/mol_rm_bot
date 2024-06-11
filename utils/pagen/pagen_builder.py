@@ -1,0 +1,30 @@
+from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+
+from utils.lexicon.load_lexicon import load_lexicon
+
+
+class PagenBuilder:
+    def __init__(self) -> None:
+        self.lexicon = load_lexicon()
+
+        self.buttons = self.lexicon.get("buttons")
+        self.callback_data = self.lexicon.get("callback_data")
+
+    async def build(self, pages: int, callback_data: str, offset=0) -> list:
+        if pages > 0:
+            buttons = []
+
+            backward_btn_text = self.buttons['pagen']['backward']
+            next_btn_text = self.buttons['pagen']['next']
+
+            backward_clb_data = self.callback_data['pagen']['backward'] + callback_data
+            next_clb_data = self.callback_data['pagen']['next'] + callback_data
+
+            if offset > 0:
+                buttons.append(InlineKeyboardButton(text=backward_btn_text,
+                                                    callback_data=backward_clb_data))
+            if pages > offset + 1:
+                buttons.append(InlineKeyboardButton(text=next_btn_text,
+                                                    callback_data=next_clb_data))
+
+            return buttons

@@ -2,13 +2,37 @@ greetings:
   admin: "[Приветственное текстовое сообщения для админов]"
   user: "[Приветственное текстовое сообщения для юзеров]"
 
-buttons:
+replicas:
   admin:
     other:
-      to_main_panel: "Главное меню"
       option: "Выберите опцию"
+      unfounded: "Список пуст"
+
+buttons:
+  pagen:
+    backward: "<<"
+    next: ">>"
+  admin:
+    general:
+      add: "Добавить"
+      edit: "Изменить"
+      delete: "Удалить"
+    other:
+      to_main_panel: "Главное меню"
+      backward: "Вернуться назад"
     main_panel:
       programs: "Программы"
       events: "Мероприятия"
       vacancies: "Вакансии"
       admins: "Администраторы"
+    programs:
+
+callback_data:
+  pagen:
+    backward: "admins_pagen_backward"
+    next: "admins_pagen_next"
+  admin:
+    general:
+      add: "admins_add"
+      edit: "admins_edit"
+      delete: "admins_delete"
