@@ -3,10 +3,25 @@ greetings:
   user: "[Приветственное текстовое сообщения для юзеров]"
 
 replicas:
+  general:
+    error: "Что-то пошло не так..."
   admin:
     other:
       option: "Выберите опцию"
-      unfounded: "Список пуст"
+      empty: "Список пуст"
+    entities:
+      create:
+        photo: "Отправьте фото"
+        title: "Отправьте название"
+        description: "Отправьте описание"
+        link: "Отправьте ссылку"
+        finish: "Успешно добавлено!"
+      edit:
+        property: "Выберите свойство, которое нужно изменить"
+        value: "Отправьте новое значение"
+        finish: "Успешно изменено!"
+      delete:
+        finish: "Успешно удалено!"
 
 buttons:
   pagen:
@@ -15,10 +30,16 @@ buttons:
   admin:
     general:
       add: "Добавить"
-      edit: "Изменить"
+      edit:
+        main: "Изменить"
+        photo: "Фото"
+        title: "Название"
+        description: "Описание"
+        link: "Ссылка"
+        activity: "Активность"
       delete: "Удалить"
     other:
-      to_main_panel: "Главное меню"
+      to_main_panel: "В главное меню"
       backward: "Вернуться назад"
     main_panel:
       programs: "Программы"
@@ -28,11 +49,19 @@ buttons:
     programs:
 
 callback_data:
-  pagen:
-    backward: "admins_pagen_backward"
-    next: "admins_pagen_next"
   admin:
+    pagen:
+      backward: "admins_pagen_backward"
+      next: "admins_pagen_next"
     general:
       add: "admins_add"
-      edit: "admins_edit"
+      edit:
+        main: "admins_edit"
+        photo: "admins_edit_photo"
+        title: "admins_edit_title"
+        description: "admins_edit_description"
+        link: "admins_edit_link"
+        activity: "admins_edit_activity"
       delete: "admins_delete"
+    other:
+      to_main_panel: "admins_back_to_main_menu"

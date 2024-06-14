@@ -1,5 +1,5 @@
 from src.dbms.connection import cursor, conn
-from src.dbms.methods.admins.select_from_admins import SelectFromAdmins
+from src.dbms.methods.admins.select_for_admins import SelectForAdmins
 
 
 class MainAdminsService:
@@ -7,7 +7,7 @@ class MainAdminsService:
         self.cursor: cursor = cursor
         self.conn: conn = conn
 
-        self.select: SelectFromAdmins = SelectFromAdmins()
+        self.select: SelectForAdmins = SelectForAdmins()
 
     async def get_admin_by_username(self, username: str) -> list:
         try:

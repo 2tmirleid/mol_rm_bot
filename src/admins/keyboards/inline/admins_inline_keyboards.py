@@ -11,17 +11,25 @@ class AdminsInlineKeyboards:
 
     async def admins_dynamic_entity_keyboard(self, callback_data: str) -> list:
         add_btn_text = self.buttons['admin']['general']['add']
-        edit_btn_text = self.buttons['admin']['general']['edit']
+        edit_btn_text = self.buttons['admin']['general']['edit']['main']
         delete_btn_text = self.buttons['admin']['general']['delete']
 
         add_btn_clb_data = self.callback_data['admin']['general']['add'] + callback_data.rsplit("-", 1)[0]
-        edit_btn_clb_data = self.callback_data['admin']['general']['edit'] + callback_data
+        edit_btn_clb_data = self.callback_data['admin']['general']['edit']['main'] + callback_data
         delete_btn_clb_data = self.callback_data['admin']['general']['delete'] + callback_data
 
         return [
-                InlineKeyboardButton(text=add_btn_text, callback_data=add_btn_clb_data),
-                InlineKeyboardButton(text=edit_btn_text, callback_data=edit_btn_clb_data),
-                InlineKeyboardButton(text=delete_btn_text, callback_data=delete_btn_clb_data)
+            InlineKeyboardButton(text=add_btn_text, callback_data=add_btn_clb_data),
+            InlineKeyboardButton(text=edit_btn_text, callback_data=edit_btn_clb_data),
+            InlineKeyboardButton(text=delete_btn_text, callback_data=delete_btn_clb_data)
+        ]
+
+    async def admins_dynamic_entity_to_main_menu_panel_keyboard(self) -> list:
+        back_to_main_menu_btn = self.buttons['admin']['other']['to_main_panel']
+        back_to_main_menu_clb_data = self.callback_data['admin']['other']['to_main_panel']
+
+        return [
+            InlineKeyboardButton(text=back_to_main_menu_btn, callback_data=back_to_main_menu_clb_data)
         ]
 
     async def admins_dynamic_create_entity_keyboard(self, callback_data: str) -> list:
@@ -30,4 +38,25 @@ class AdminsInlineKeyboards:
 
         return [
             InlineKeyboardButton(text=add_btn_text, callback_data=add_btn_clb_data)
+        ]
+
+    async def admins_dynamic_edit_entity_keyboard(self, callback_data: str) -> list:
+        photo_btn_text = self.buttons['admin']['general']['edit']['photo']
+        title_btn_text = self.buttons['admin']['general']['edit']['title']
+        description_btn_text = self.buttons['admin']['general']['edit']['description']
+        link_btn_text = self.buttons['admin']['general']['edit']['link']
+        activity_btn_text = self.buttons['admin']['general']['edit']['activity']
+
+        photo_btn_clb_data = self.callback_data['admin']['general']['edit']['photo'] + callback_data
+        title_btn_clb_data = self.callback_data['admin']['general']['edit']['title'] + callback_data
+        description_clb_data = self.callback_data['admin']['general']['edit']['description'] + callback_data
+        link_btn_clb_data = self.callback_data['admin']['general']['edit']['link'] + callback_data
+        activity_btn_clb_data = self.callback_data['admin']['general']['edit']['activity'] + callback_data
+
+        return [
+            [InlineKeyboardButton(text=photo_btn_text, callback_data=photo_btn_clb_data),
+             InlineKeyboardButton(text=description_btn_text, callback_data=description_clb_data),
+             InlineKeyboardButton(text=title_btn_text, callback_data=title_btn_clb_data)],
+            [InlineKeyboardButton(text=link_btn_text, callback_data=link_btn_clb_data),
+             InlineKeyboardButton(text=activity_btn_text, callback_data=activity_btn_clb_data)],
         ]
