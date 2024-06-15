@@ -5,6 +5,7 @@ greetings:
 replicas:
   general:
     error: "Что-то пошло не так..."
+    max_chars_length: "Количество символов не должно быть больше 1000"
   admin:
     other:
       option: "Выберите опцию"

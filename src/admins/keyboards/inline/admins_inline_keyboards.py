@@ -24,13 +24,23 @@ class AdminsInlineKeyboards:
             InlineKeyboardButton(text=delete_btn_text, callback_data=delete_btn_clb_data)
         ]
 
-    async def admins_dynamic_entity_to_main_menu_panel_keyboard(self) -> list:
+    async def admins_dynamic_entity_to_main_menu_panel_keyboard(
+            self, markup: bool = False
+    ) -> list or InlineKeyboardMarkup:
+
         back_to_main_menu_btn = self.buttons['admin']['other']['to_main_panel']
         back_to_main_menu_clb_data = self.callback_data['admin']['other']['to_main_panel']
 
-        return [
-            InlineKeyboardButton(text=back_to_main_menu_btn, callback_data=back_to_main_menu_clb_data)
-        ]
+        if markup:
+            return InlineKeyboardMarkup(
+                inline_keyboard=[
+                    [InlineKeyboardButton(text=back_to_main_menu_btn, callback_data=back_to_main_menu_clb_data)]
+                ]
+            )
+        else:
+            return [
+                InlineKeyboardButton(text=back_to_main_menu_btn, callback_data=back_to_main_menu_clb_data)
+            ]
 
     async def admins_dynamic_create_entity_keyboard(self, callback_data: str) -> list:
         add_btn_text = self.buttons['admin']['general']['add']

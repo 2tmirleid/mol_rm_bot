@@ -1,3 +1,5 @@
+import re
+
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, InlineKeyboardButton, InlineKeyboardMarkup, InputMediaPhoto
 
@@ -26,6 +28,9 @@ class AdminsProgramsController:
             programs = await self.admins_service.get_all_programs(offset=offset)
             programs_count = await self.admins_service.get_programs_count()
 
+            back_to_main_menu_btn = await (self.admins_inline_keyboards.
+                                           admins_dynamic_entity_to_main_menu_panel_keyboard())
+
             pages = programs_count[0][0]
 
             pagen_callback_data = f"_programs-{offset}"
@@ -42,9 +47,6 @@ class AdminsProgramsController:
                 buttons = await self.admins_inline_keyboards.admins_dynamic_entity_keyboard(
                     callback_data=inline_callback_data
                 )
-
-                back_to_main_menu_btn = await (self.admins_inline_keyboards.
-                                               admins_dynamic_entity_to_main_menu_panel_keyboard())
 
                 keyboard = InlineKeyboardMarkup(
                     inline_keyboard=[
@@ -76,9 +78,6 @@ class AdminsProgramsController:
                     callback_data=inline_callback_data
                 )
 
-                back_to_main_menu_btn = await (self.admins_inline_keyboards.
-                                               admins_dynamic_entity_to_main_menu_panel_keyboard())
-
                 keyboard = InlineKeyboardMarkup(inline_keyboard=[
                     create_button,
                     back_to_main_menu_btn
@@ -90,25 +89,17 @@ class AdminsProgramsController:
             print(f"Error while getting programs by admin: {e}")
 
             back_to_main_menu_btn = await (self.admins_inline_keyboards.
-                                           admins_dynamic_entity_to_main_menu_panel_keyboard())
-
-            keyboard = InlineKeyboardMarkup(inline_keyboard=[
-                back_to_main_menu_btn
-            ])
+                                           admins_dynamic_entity_to_main_menu_panel_keyboard(markup=True))
 
             await msg.answer(self.replicas['general']['error'],
-                             reply_markup=keyboard)
+                             reply_markup=back_to_main_menu_btn)
 
     async def admins_add_program_photo(self, msg: Message, state: FSMContext) -> None:
         back_to_main_menu_btn = await (self.admins_inline_keyboards.
-                                       admins_dynamic_entity_to_main_menu_panel_keyboard())
-
-        keyboard = InlineKeyboardMarkup(inline_keyboard=[
-            back_to_main_menu_btn
-        ])
+                                       admins_dynamic_entity_to_main_menu_panel_keyboard(markup=True))
 
         await msg.answer(self.replicas['admin']['entities']['create']['photo'],
-                         reply_markup=keyboard)
+                         reply_markup=back_to_main_menu_btn)
 
         await state.set_state(CreateProgramState.photo)
 
@@ -116,14 +107,10 @@ class AdminsProgramsController:
         await state.update_data(photo=msg.photo[-1].file_id)
 
         back_to_main_menu_btn = await (self.admins_inline_keyboards.
-                                       admins_dynamic_entity_to_main_menu_panel_keyboard())
-
-        keyboard = InlineKeyboardMarkup(inline_keyboard=[
-            back_to_main_menu_btn
-        ])
+                                       admins_dynamic_entity_to_main_menu_panel_keyboard(markup=True))
 
         await msg.answer(self.replicas['admin']['entities']['create']['title'],
-                         reply_markup=keyboard)
+                         reply_markup=back_to_main_menu_btn)
 
         await state.set_state(CreateProgramState.title)
 
@@ -131,31 +118,31 @@ class AdminsProgramsController:
         await state.update_data(title=msg.text)
 
         back_to_main_menu_btn = await (self.admins_inline_keyboards.
-                                       admins_dynamic_entity_to_main_menu_panel_keyboard())
-
-        keyboard = InlineKeyboardMarkup(inline_keyboard=[
-            back_to_main_menu_btn
-        ])
+                                       admins_dynamic_entity_to_main_menu_panel_keyboard(markup=True))
 
         await msg.answer(self.replicas['admin']['entities']['create']['description'],
-                         reply_markup=keyboard)
+                         reply_markup=back_to_main_menu_btn)
 
         await state.set_state(CreateProgramState.description)
 
     async def admins_add_program_link(self, msg: Message, state: FSMContext) -> None:
-        await state.update_data(description=msg.text)
-
         back_to_main_menu_btn = await (self.admins_inline_keyboards.
-                                       admins_dynamic_entity_to_main_menu_panel_keyboard())
+                                       admins_dynamic_entity_to_main_menu_panel_keyboard(markup=True))
+        msg_chars_length = re.findall(r".", msg.text)
 
-        keyboard = InlineKeyboardMarkup(inline_keyboard=[
-            back_to_main_menu_btn
-        ])
+        if len(msg_chars_length) > 1000:
+            await msg.answer(self.replicas['general']['max_chars_length'])
+            await msg.answer(self.replicas['admin']['entities']['create']['description'],
+                             reply_markup=back_to_main_menu_btn)
 
-        await msg.answer(self.replicas['admin']['entities']['create']['link'],
-                         reply_markup=keyboard)
+            await state.set_state(CreateProgramState.description)
+        else:
+            await state.update_data(description=msg.text)
 
-        await state.set_state(CreateProgramState.link)
+            await msg.answer(self.replicas['admin']['entities']['create']['link'],
+                             reply_markup=back_to_main_menu_btn)
+
+            await state.set_state(CreateProgramState.link)
 
     async def admins_add_program_finish(self, msg: Message, state: FSMContext) -> None:
         await state.update_data(link=msg.text)
@@ -184,14 +171,10 @@ class AdminsProgramsController:
             await self.admins_get_programs(msg=msg)
         else:
             back_to_main_menu_btn = await (self.admins_inline_keyboards.
-                                           admins_dynamic_entity_to_main_menu_panel_keyboard())
-
-            keyboard = InlineKeyboardMarkup(inline_keyboard=[
-                back_to_main_menu_btn
-            ])
+                                           admins_dynamic_entity_to_main_menu_panel_keyboard(markup=True))
 
             await msg.answer(self.replicas['general']['error'],
-                             reply_markup=keyboard)
+                             reply_markup=back_to_main_menu_btn)
 
     async def admins_delete_program(self, msg: Message, program_id: str) -> None:
         delete_program = await self.admins_service.delete_program(program_id=program_id)
@@ -202,14 +185,10 @@ class AdminsProgramsController:
             await self.admins_get_programs(msg=msg)
         else:
             back_to_main_menu_btn = await (self.admins_inline_keyboards.
-                                           admins_dynamic_entity_to_main_menu_panel_keyboard())
-
-            keyboard = InlineKeyboardMarkup(inline_keyboard=[
-                back_to_main_menu_btn
-            ])
+                                           admins_dynamic_entity_to_main_menu_panel_keyboard(markup=True))
 
             await msg.answer(self.replicas['general']['error'],
-                             reply_markup=keyboard)
+                             reply_markup=back_to_main_menu_btn)
 
     async def admins_edit_program(self, msg: Message, state: FSMContext, program_id: str) -> None:
         await state.set_state(EditProgramState.program_id)
@@ -235,6 +214,9 @@ class AdminsProgramsController:
         await state.set_state(EditProgramState.property)
 
     async def admins_edit_program_property(self, msg: Message, state: FSMContext, property: str) -> None:
+        back_to_main_menu_btn = await (self.admins_inline_keyboards.
+                                       admins_dynamic_entity_to_main_menu_panel_keyboard(markup=True))
+
         if property == "activity":
             data = await state.get_data()
 
@@ -249,27 +231,13 @@ class AdminsProgramsController:
 
                 await self.admins_get_programs(msg=msg)
             else:
-                back_to_main_menu_btn = await (self.admins_inline_keyboards.
-                                               admins_dynamic_entity_to_main_menu_panel_keyboard())
-
-                keyboard = InlineKeyboardMarkup(inline_keyboard=[
-                    back_to_main_menu_btn
-                ])
-
                 await msg.answer(self.replicas['general']['error'],
-                                 reply_markup=keyboard)
+                                 reply_markup=back_to_main_menu_btn)
         else:
             await state.update_data(property=property)
 
-            back_to_main_menu_btn = await (self.admins_inline_keyboards.
-                                           admins_dynamic_entity_to_main_menu_panel_keyboard())
-
-            keyboard = InlineKeyboardMarkup(inline_keyboard=[
-                back_to_main_menu_btn
-            ])
-
             await msg.answer(self.replicas['admin']['entities']['edit']['value'],
-                             reply_markup=keyboard)
+                             reply_markup=back_to_main_menu_btn)
 
             await state.set_state(EditProgramState.value)
 
@@ -297,11 +265,7 @@ class AdminsProgramsController:
                              await self.admins_get_programs(msg=msg))
         else:
             back_to_main_menu_btn = await (self.admins_inline_keyboards.
-                                           admins_dynamic_entity_to_main_menu_panel_keyboard())
-
-            keyboard = InlineKeyboardMarkup(inline_keyboard=[
-                back_to_main_menu_btn
-            ])
+                                           admins_dynamic_entity_to_main_menu_panel_keyboard(markup=True))
 
             await msg.answer(self.replicas['general']['error'],
-                             reply_markup=keyboard)
+                             reply_markup=back_to_main_menu_btn)
