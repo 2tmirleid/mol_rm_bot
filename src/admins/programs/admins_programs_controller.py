@@ -1,7 +1,9 @@
+import os
 import re
 
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, InlineKeyboardButton, InlineKeyboardMarkup, InputMediaPhoto
+from dotenv import load_dotenv, find_dotenv
 
 from src.admins.keyboards.inline.admins_inline_keyboards import AdminsInlineKeyboards
 from src.admins.keyboards.reply.admins_reply_keyboards import AdminsReplyKeyboards
@@ -14,6 +16,8 @@ from utils.pagen.pagen_builder import PagenBuilder
 
 class AdminsProgramsController:
     def __init__(self):
+        load_dotenv(find_dotenv())
+
         self.admins_service: AdminsProgramsService = AdminsProgramsService()
         self.admins_reply_keyboards: AdminsReplyKeyboards = AdminsReplyKeyboards()
         self.admins_inline_keyboards: AdminsInlineKeyboards = AdminsInlineKeyboards()
@@ -128,10 +132,12 @@ class AdminsProgramsController:
     async def admins_add_program_link(self, msg: Message, state: FSMContext) -> None:
         back_to_main_menu_btn = await (self.admins_inline_keyboards.
                                        admins_dynamic_entity_to_main_menu_panel_keyboard(markup=True))
-        msg_chars_length = re.findall(r".", msg.text)
 
-        if len(msg_chars_length) > 1000:
-            await msg.answer(self.replicas['general']['max_chars_length'])
+        max_chars_length = os.environ["MAX_CHARS_LENGTH"]
+        chars_length = re.findall(r".", msg.text)
+
+        if len(chars_length) > int(max_chars_length):
+            await msg.answer(self.replicas['general']['max_chars_length'] + f" {max_chars_length}")
             await msg.answer(self.replicas['admin']['entities']['create']['description'],
                              reply_markup=back_to_main_menu_btn)
 
