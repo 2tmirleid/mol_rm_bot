@@ -16,3 +16,7 @@ class InsertForAdmins:
     async def insert_vacancy(self, vacancy: list) -> str:
         return f"""INSERT INTO vacancies (photo, title, description, link)
         VALUES ('{vacancy[0]}', '{vacancy[1]}', '{vacancy[2]}', '{vacancy[3]}')"""
+
+    async def insert_admin(self, admin: list) -> str:
+        return f"""INSERT INTO admins (telegram_chat_id, telegram_username, photo, name, description, phone)
+        VALUES ('{admin[0]}', '{admin[1]}', '{admin[2]}', '{admin[3]}', '{admin[4]}', '{admin[5]}')"""

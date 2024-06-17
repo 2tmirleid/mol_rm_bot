@@ -54,3 +54,15 @@ class MainAdminsService:
             return self.cursor.fetchall()
         except Exception as e:
             print(f"Error while get count of admins: {e}")
+
+    async def add_admin(self, admin: list) -> bool:
+        try:
+            self.cursor.execute(
+                await self.insert_for_admins.insert_admin(admin=admin)
+            )
+            self.conn.commit()
+
+            return True
+        except Exception as e:
+            print(f"Error while add of admin: {e}")
+            return False

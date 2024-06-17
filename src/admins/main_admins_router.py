@@ -1,8 +1,10 @@
 from aiogram import Router, F
-from aiogram.filters import Command
+from aiogram.filters import Command, StateFilter
+from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, CallbackQuery
 
 from src.admins.main_admins_controller import MainAdminsController
+from src.admins.states.admins.create_admin_state import CreateAdminState
 from src.middlewares.admins_middleware import AdminsMiddleware
 from utils.lexicon.load_lexicon import load_lexicon
 
@@ -58,3 +60,38 @@ async def process_admins_pagen_backward_admins(clb_query: CallbackQuery) -> None
     await main_admins_controller.admins_get_admins(msg=clb_query.message,
                                                    offset=offset,
                                                    edit=True)
+
+
+@router.callback_query(F.data == callback_data['admin']['general']['add'] + "_admins")
+async def process_admins_add_admin_photo(clb_query: CallbackQuery, state: FSMContext) -> None:
+    await main_admins_controller.admins_add_admin_photo(msg=clb_query.message, state=state)
+
+
+@router.message(StateFilter(CreateAdminState.photo), F.photo)
+async def process_admins_add_admin_chat_id(msg: Message, state: FSMContext) -> None:
+    await main_admins_controller.admins_add_admin_chat_id(msg=msg, state=state)
+
+
+@router.message(StateFilter(CreateAdminState.chat_id), F.text)
+async def process_admins_add_admin_username(msg: Message, state: FSMContext) -> None:
+    await main_admins_controller.admins_add_admin_username(msg=msg, state=state)
+
+
+@router.message(StateFilter(CreateAdminState.username), F.text)
+async def process_admins_add_admin_name(msg: Message, state: FSMContext) -> None:
+    await main_admins_controller.admins_add_admin_name(msg=msg, state=state)
+
+
+@router.message(StateFilter(CreateAdminState.name), F.text)
+async def process_admins_add_admin_description(msg: Message, state: FSMContext) -> None:
+    await main_admins_controller.admins_add_admin_description(msg=msg, state=state)
+
+
+@router.message(StateFilter(CreateAdminState.description), F.text)
+async def process_admins_add_admin_phone(msg: Message, state: FSMContext) -> None:
+    await main_admins_controller.admins_add_admin_phone(msg=msg, state=state)
+
+
+@router.message(StateFilter(CreateAdminState.phone), F.text)
+async def process_admins_add_admin_finish(msg: Message, state: FSMContext) -> None:
+    await main_admins_controller.admins_add_admin_finish(msg=msg, state=state)
