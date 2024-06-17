@@ -25,3 +25,9 @@ class SelectForAdmins:
 
     async def select_event_activity_by_id(self, event_id) -> str:
         return f"""SELECT is_active FROM events WHERE _id = '{event_id}'"""
+
+    async def select_all_vacancies(self, offset=0) -> str:
+        return f"""SELECT _id, photo, title, description, link, is_active FROM vacancies LIMIT 1 OFFSET {offset}"""
+
+    async def select_vacancies_count(self) -> str:
+        return """SELECT COUNT(*) FROM vacancies"""

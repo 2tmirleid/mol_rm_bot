@@ -6,6 +6,7 @@ from dotenv import load_dotenv, find_dotenv
 from src.admins import main_admins_router
 from src.admins.events import admins_events_router
 from src.admins.programs import admins_programs_router
+from src.admins.vacancies import admins_vacancies_router
 from src.dbms.models.admins import create_admins_model
 from src.dbms.models.events import create_events_model
 from src.dbms.models.programs import create_programs_model
@@ -23,7 +24,8 @@ class Main:
                                      routers=[
                                          main_admins_router.router,
                                          admins_programs_router.router,
-                                         admins_events_router.router
+                                         admins_events_router.router,
+                                         admins_vacancies_router.router
                                      ],
                                      models=[
                                          create_admins_model,
