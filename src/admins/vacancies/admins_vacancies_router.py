@@ -4,6 +4,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, CallbackQuery
 
 from src.admins.states.vacancies.create_vacancy_state import CreateVacancyState
+from src.admins.states.vacancies.edit_vacancy_state import EditVacancyState
 from src.admins.vacancies.admins_vacancies_controller import AdminsVacanciesController
 from src.middlewares.admins_middleware import AdminsMiddleware
 from utils.lexicon.load_lexicon import load_lexicon
@@ -78,3 +79,36 @@ async def process_admins_delete_vacancy(clb_query: CallbackQuery) -> None:
     vacancy_id = str(clb_query.data.split("-")[1])
 
     await admins_vacancies_controller.admins_delete_vacancy(msg=clb_query.message, vacancy_id=vacancy_id)
+
+
+@router.callback_query(lambda query: query.data.startswith(
+    callback_data['admin']['general']['edit']['main'] + "_vacancies"
+))
+async def process_admins_edit_vacancy(clb_query: CallbackQuery, state: FSMContext) -> None:
+    vacancy_id = str(clb_query.data.split("-")[1])
+
+    await admins_vacancies_controller.admins_edit_vacancy(msg=clb_query.message,
+                                                          state=state,
+                                                          vacancy_id=vacancy_id)
+
+
+@router.callback_query(lambda query: any(
+    edit_action in query.data for edit_action in [
+        callback_data['admin']['general']['edit']['photo'] + "_vacancies",
+        callback_data['admin']['general']['edit']['title'] + "_vacancies",
+        callback_data['admin']['general']['edit']['description'] + "_vacancies",
+        callback_data['admin']['general']['edit']['link'] + "_vacancies",
+        callback_data['admin']['general']['edit']['activity'] + "_vacancies"
+    ]
+))
+async def process_admins_edit_vacancy_property(clb_query: CallbackQuery, state: FSMContext) -> None:
+    property = str(clb_query.data.split("_")[2])
+
+    await admins_vacancies_controller.admins_edit_vacancy_property(msg=clb_query.message, state=state, property=property)
+
+
+@router.message(StateFilter(
+    EditVacancyState.value
+), F.photo | F.text)
+async def process_admins_edit_vacancy_value(msg: Message, state: FSMContext) -> None:
+    await admins_vacancies_controller.admins_edit_vacancy_value(msg=msg, state=state)

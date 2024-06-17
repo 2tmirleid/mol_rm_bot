@@ -1,6 +1,4 @@
 
-
-
 class UpdateForAdmins:
     def __init__(self):
         ...
@@ -17,3 +15,8 @@ class UpdateForAdmins:
     async def update_event(self, event_id: str, property: str, value: str) -> str:
         return f"""UPDATE events SET {property} = '{value}' WHERE _id = '{event_id}'"""
 
+    async def update_vacancy_activity(self, vacancy_activity: bool, vacancy_id: str) -> str:
+        return f"""UPDATE vacancies SET is_active = {not vacancy_activity} WHERE _id = '{vacancy_id}'"""
+
+    async def update_vacancy(self, vacancy_id: str, property: str, value: str) -> str:
+        return f"""UPDATE vacancies SET {property} = '{value}' WHERE _id = '{vacancy_id}'"""

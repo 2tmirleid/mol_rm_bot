@@ -31,3 +31,6 @@ class SelectForAdmins:
 
     async def select_vacancies_count(self) -> str:
         return """SELECT COUNT(*) FROM vacancies"""
+
+    async def select_vacancy_activity_by_id(self, vacancy_id) -> str:
+        return f"""SELECT is_active FROM vacancies WHERE _id = '{vacancy_id}'"""

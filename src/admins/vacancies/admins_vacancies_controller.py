@@ -8,6 +8,7 @@ from dotenv import load_dotenv, find_dotenv
 from src.admins.keyboards.inline.admins_inline_keyboards import AdminsInlineKeyboards
 from src.admins.keyboards.reply.admins_reply_keyboards import AdminsReplyKeyboards
 from src.admins.states.vacancies.create_vacancy_state import CreateVacancyState
+from src.admins.states.vacancies.edit_vacancy_state import EditVacancyState
 from src.admins.vacancies.admins_vacancies_service import AdminsVacanciesService
 from utils.lexicon.load_lexicon import load_lexicon
 from utils.pagen.pagen_builder import PagenBuilder
@@ -188,6 +189,86 @@ class AdminsVacanciesController:
             await msg.answer(self.replicas['admin']['entities']['delete']['finish'])
 
             await self.admins_get_vacancies(msg=msg)
+        else:
+            back_to_main_menu_btn = await (self.admins_inline_keyboards.
+                                           admins_dynamic_entity_to_main_menu_panel_keyboard(markup=True))
+
+            await msg.answer(self.replicas['general']['error'],
+                             reply_markup=back_to_main_menu_btn)
+
+    async def admins_edit_vacancy(self, msg: Message, state: FSMContext, vacancy_id: str) -> None:
+        await state.set_state(EditVacancyState.vacancy_id)
+
+        await state.update_data(vacancy_id=vacancy_id)
+
+        callback_data = "_vacancies"
+
+        edit_buttons = await (self.admins_inline_keyboards.
+                              admins_dynamic_edit_entity_keyboard(callback_data=callback_data))
+
+        back_to_main_menu_btn = await (self.admins_inline_keyboards.
+                                       admins_dynamic_entity_to_main_menu_panel_keyboard())
+
+        keyboard = InlineKeyboardMarkup(inline_keyboard=[
+            *edit_buttons,
+            back_to_main_menu_btn
+        ])
+
+        await msg.answer(self.replicas['admin']['entities']['edit']['property'],
+                         reply_markup=keyboard)
+
+        await state.set_state(EditVacancyState.property)
+
+    async def admins_edit_vacancy_property(self, msg: Message, state: FSMContext, property: str) -> None:
+        back_to_main_menu_btn = await (self.admins_inline_keyboards.
+                                       admins_dynamic_entity_to_main_menu_panel_keyboard(markup=True))
+
+        if property == "activity":
+            data = await state.get_data()
+
+            vacancy_id = data.get("vacancy_id")
+
+            await state.clear()
+
+            vacancy_activity = await self.admins_service.change_vacancy_activity(vacancy_id=vacancy_id)
+
+            if vacancy_activity:
+                await msg.answer(self.replicas['admin']['entities']['edit']['finish'])
+
+                await self.admins_get_vacancies(msg=msg)
+            else:
+                await msg.answer(self.replicas['general']['error'],
+                                 reply_markup=back_to_main_menu_btn)
+        else:
+            await state.update_data(property=property)
+
+            await msg.answer(self.replicas['admin']['entities']['edit']['value'],
+                             reply_markup=back_to_main_menu_btn)
+
+            await state.set_state(EditVacancyState.value)
+
+    async def admins_edit_vacancy_value(self, msg: Message, state: FSMContext) -> None:
+        data = await state.get_data()
+
+        vacancy_id = data.get("vacancy_id")
+        property = data.get("property")
+        value = ""
+
+        if property == "photo":
+            if msg.photo[-1].file_id:
+                value = msg.photo[-1].file_id
+        else:
+            value = msg.text
+
+        update_vacancy = await self.admins_service.edit_vacancy(
+            vacancy_id=vacancy_id, property=property, value=value
+        )
+
+        await state.clear()
+
+        if update_vacancy:
+            await msg.answer(self.replicas['admin']['entities']['edit']['finish'],
+                             await self.admins_get_vacancies(msg=msg))
         else:
             back_to_main_menu_btn = await (self.admins_inline_keyboards.
                                            admins_dynamic_entity_to_main_menu_panel_keyboard(markup=True))
