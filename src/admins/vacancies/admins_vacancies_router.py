@@ -67,3 +67,14 @@ async def process_admins_add_vacancy_link(msg: Message, state: FSMContext) -> No
 @router.message(StateFilter(CreateVacancyState.link), F.text)
 async def process_admins_add_program_finish(msg: Message, state: FSMContext) -> None:
     await admins_vacancies_controller.admins_add_vacancy_finish(msg=msg, state=state)
+
+
+@router.callback_query(lambda query: any(
+    edit_action in query.data for edit_action in [
+        callback_data['admin']['general']['delete'] + "_vacancies",
+    ]
+))
+async def process_admins_delete_vacancy(clb_query: CallbackQuery) -> None:
+    vacancy_id = str(clb_query.data.split("-")[1])
+
+    await admins_vacancies_controller.admins_delete_vacancy(msg=clb_query.message, vacancy_id=vacancy_id)

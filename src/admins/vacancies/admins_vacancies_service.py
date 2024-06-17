@@ -46,3 +46,16 @@ class AdminsVacanciesService:
         except Exception as e:
             print(f"Error while add of vacancy: {e}")
             return False
+
+    async def delete_vacancy(self, vacancy_id: str) -> bool:
+        try:
+            self.cursor.execute(
+                await self.delete_for_admins.delete_vacancy(vacancy_id=vacancy_id)
+            )
+
+            self.conn.commit()
+
+            return True
+        except Exception as e:
+            print(f"Error while deleting vacancy: {e}")
+            return False

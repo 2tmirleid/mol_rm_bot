@@ -180,3 +180,17 @@ class AdminsVacanciesController:
 
             await msg.answer(self.replicas['general']['error'],
                              reply_markup=back_to_main_menu_btn)
+
+    async def admins_delete_vacancy(self, msg: Message, vacancy_id: str) -> None:
+        delete_vacancy = await self.admins_service.delete_vacancy(vacancy_id=vacancy_id)
+
+        if delete_vacancy:
+            await msg.answer(self.replicas['admin']['entities']['delete']['finish'])
+
+            await self.admins_get_vacancies(msg=msg)
+        else:
+            back_to_main_menu_btn = await (self.admins_inline_keyboards.
+                                           admins_dynamic_entity_to_main_menu_panel_keyboard(markup=True))
+
+            await msg.answer(self.replicas['general']['error'],
+                             reply_markup=back_to_main_menu_btn)
