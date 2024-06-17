@@ -4,7 +4,7 @@ def create_events_model() -> str:
         photo VARCHAR(255),
         title VARCHAR(255),
         description TEXT,
-        event_date VARCHAR(10),
+        date VARCHAR(10),
         link TEXT,
         is_active BOOLEAN DEFAULT TRUE
     );"""

@@ -50,7 +50,7 @@ class AdminsInlineKeyboards:
             InlineKeyboardButton(text=add_btn_text, callback_data=add_btn_clb_data)
         ]
 
-    async def admins_dynamic_edit_entity_keyboard(self, callback_data: str) -> list:
+    async def admins_dynamic_edit_entity_keyboard(self, callback_data: str, date=False) -> list:
         photo_btn_text = self.buttons['admin']['general']['edit']['photo']
         title_btn_text = self.buttons['admin']['general']['edit']['title']
         description_btn_text = self.buttons['admin']['general']['edit']['description']
@@ -63,10 +63,23 @@ class AdminsInlineKeyboards:
         link_btn_clb_data = self.callback_data['admin']['general']['edit']['link'] + callback_data
         activity_btn_clb_data = self.callback_data['admin']['general']['edit']['activity'] + callback_data
 
-        return [
-            [InlineKeyboardButton(text=photo_btn_text, callback_data=photo_btn_clb_data),
-             InlineKeyboardButton(text=description_btn_text, callback_data=description_clb_data),
-             InlineKeyboardButton(text=title_btn_text, callback_data=title_btn_clb_data)],
-            [InlineKeyboardButton(text=link_btn_text, callback_data=link_btn_clb_data),
-             InlineKeyboardButton(text=activity_btn_text, callback_data=activity_btn_clb_data)],
-        ]
+        if date:
+            date_btn_text = self.buttons['admin']['general']['edit']['date']
+            date_btn_clb_data = self.callback_data['admin']['general']['edit']['date'] + callback_data
+
+            return [
+                [InlineKeyboardButton(text=photo_btn_text, callback_data=photo_btn_clb_data),
+                 InlineKeyboardButton(text=description_btn_text, callback_data=description_clb_data),
+                 InlineKeyboardButton(text=title_btn_text, callback_data=title_btn_clb_data)],
+                [InlineKeyboardButton(text=link_btn_text, callback_data=link_btn_clb_data),
+                 InlineKeyboardButton(text=date_btn_text, callback_data=date_btn_clb_data),
+                 InlineKeyboardButton(text=activity_btn_text, callback_data=activity_btn_clb_data)],
+            ]
+        else:
+            return [
+                [InlineKeyboardButton(text=photo_btn_text, callback_data=photo_btn_clb_data),
+                 InlineKeyboardButton(text=description_btn_text, callback_data=description_clb_data),
+                 InlineKeyboardButton(text=title_btn_text, callback_data=title_btn_clb_data)],
+                [InlineKeyboardButton(text=link_btn_text, callback_data=link_btn_clb_data),
+                 InlineKeyboardButton(text=activity_btn_text, callback_data=activity_btn_clb_data)],
+            ]

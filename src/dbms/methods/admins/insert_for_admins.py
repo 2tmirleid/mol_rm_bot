@@ -10,5 +10,5 @@ class InsertForAdmins:
         VALUES ('{program[0]}', '{program[1]}', '{program[2]}', '{program[3]}')"""
 
     async def insert_event(self, event: list) -> str:
-        return f"""INSERT INTO events (photo, title, description, event_date, link)
+        return f"""INSERT INTO events (photo, title, description, date, link)
         VALUES ('{event[0]}', '{event[1]}', '{event[2]}', '{event[3]}', '{event[4]}')"""

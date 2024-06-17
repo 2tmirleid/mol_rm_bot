@@ -5,6 +5,7 @@ from aiogram.types import Message, CallbackQuery
 
 from src.admins.events.admins_events_controller import AdminsEventsController
 from src.admins.states.events.create_event_state import CreateEventState
+from src.admins.states.events.edit_event_state import EditEventState
 from src.middlewares.admins_middleware import AdminsMiddleware
 from utils.lexicon.load_lexicon import load_lexicon
 
@@ -83,3 +84,37 @@ async def process_admins_delete_event(clb_query: CallbackQuery) -> None:
     event_id = str(clb_query.data.split("-")[1])
 
     await admins_events_controller.admins_delete_event(msg=clb_query.message, event_id=event_id)
+
+
+@router.callback_query(lambda query: query.data.startswith(
+    callback_data['admin']['general']['edit']['main'] + "_events"
+))
+async def process_admins_edit_event(clb_query: CallbackQuery, state: FSMContext) -> None:
+    event_id = str(clb_query.data.split("-")[1])
+
+    await admins_events_controller.admins_edit_event(msg=clb_query.message,
+                                                     state=state,
+                                                     event_id=event_id)
+
+
+@router.callback_query(lambda query: any(
+    edit_action in query.data for edit_action in [
+        callback_data['admin']['general']['edit']['photo'] + "_events",
+        callback_data['admin']['general']['edit']['title'] + "_events",
+        callback_data['admin']['general']['edit']['description'] + "_events",
+        callback_data['admin']['general']['edit']['date'] + "_events",
+        callback_data['admin']['general']['edit']['link'] + "_events",
+        callback_data['admin']['general']['edit']['activity'] + "_events"
+    ]
+))
+async def process_admins_edit_event_property(clb_query: CallbackQuery, state: FSMContext) -> None:
+    property = str(clb_query.data.split("_")[2])
+
+    await admins_events_controller.admins_edit_event_property(msg=clb_query.message, state=state, property=property)
+
+
+@router.message(StateFilter(
+    EditEventState.value
+), F.photo | F.text)
+async def process_admins_edit_event_value(msg: Message, state: FSMContext) -> None:
+    await admins_events_controller.admins_edit_event_value(msg=msg, state=state)

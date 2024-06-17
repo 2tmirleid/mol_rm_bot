@@ -59,3 +59,45 @@ class AdminsEventsService:
         except Exception as e:
             print(f"Error while deleting event: {e}")
             return False
+
+    async def change_event_activity(self, event_id: str) -> bool:
+        try:
+            event_activity = await self.get_event_activity_by_id(event_id=event_id)
+
+            self.cursor.execute(
+                await self.update_for_admins.update_event_activity(
+                    event_id=event_id, event_activity=event_activity[0][0])
+            )
+
+            self.conn.commit()
+
+            return True
+        except Exception as e:
+            print(f"Error while change event activity: {e}")
+            return False
+
+    async def get_event_activity_by_id(self, event_id):
+        try:
+            self.cursor.execute(
+                await self.select_for_admins.select_event_activity_by_id(event_id=event_id)
+            )
+
+            event_activity = self.cursor.fetchall()
+
+            return event_activity
+        except Exception as e:
+            print(f"Error while get event activity by id: {e}")
+            return False
+
+    async def edit_event(self, event_id: str, property: str, value: str) -> bool:
+        try:
+            self.cursor.execute(
+                await self.update_for_admins.update_event(event_id=event_id, property=property, value=value)
+            )
+
+            self.conn.commit()
+
+            return True
+        except Exception as e:
+            print(f"Error while update event: {e}")
+            return False
