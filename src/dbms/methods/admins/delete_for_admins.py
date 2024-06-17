@@ -10,3 +10,6 @@ class DeleteForAdmins:
 
     async def delete_vacancy(self, vacancy_id: str) -> str:
         return f"""DELETE FROM vacancies WHERE _id = '{vacancy_id}'"""
+
+    async def delete_admin(self, admin_id: str) -> str:
+        return f"""DELETE FROM admins WHERE _id = '{admin_id}'"""

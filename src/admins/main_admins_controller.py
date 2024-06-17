@@ -72,16 +72,15 @@ class MainAdminsController:
                 msg_text = f"{offset + 1} из {pages}\n\n" \
                            f"Имя: {admins[0][2]}\n\n" \
                            f"Описание: {admins[0][3]}\n\n" \
-                           f"Телефон: <a href='tel:{admins[0][4]}'>{admins[0][4]}</a>\n\n" \
+                           f"Телефон: {admins[0][4]}\n\n" \
 
                 if edit:
                     media = InputMediaPhoto(media=photo, caption=msg_text)
-                    await msg.edit_media(media=media, reply_markup=keyboard, parse_mode="HTML")
+                    await msg.edit_media(media=media, reply_markup=keyboard)
                 else:
                     await msg.answer_photo(photo=photo,
                                            caption=msg_text,
-                                           reply_markup=keyboard,
-                                           parse_mode="HTML")
+                                           reply_markup=keyboard)
             else:
                 inline_callback_data = f"_admins"
 
@@ -226,3 +225,17 @@ class MainAdminsController:
             else:
                 await msg.answer(self.replicas['general']['error'],
                                  reply_markup=back_to_main_menu_btn)
+
+    async def admins_delete_admin(self, msg: Message, admin_id: str) -> None:
+        delete_admin = await self.admins_service.delete_admin(admin_id=admin_id)
+
+        if delete_admin:
+            await msg.answer(self.replicas['admin']['entities']['delete']['finish'])
+
+            await self.admins_get_admins(msg=msg)
+        else:
+            back_to_main_menu_btn = await (self.admins_inline_keyboards.
+                                           admins_dynamic_entity_to_main_menu_panel_keyboard(markup=True))
+
+            await msg.answer(self.replicas['general']['error'],
+                             reply_markup=back_to_main_menu_btn)

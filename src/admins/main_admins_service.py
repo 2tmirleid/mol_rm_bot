@@ -66,3 +66,16 @@ class MainAdminsService:
         except Exception as e:
             print(f"Error while add of admin: {e}")
             return False
+
+    async def delete_admin(self, admin_id: str) -> bool:
+        try:
+            self.cursor.execute(
+                await self.delete_for_admins.delete_admin(admin_id=admin_id)
+            )
+
+            self.conn.commit()
+
+            return True
+        except Exception as e:
+            print(f"Error while deleting admin: {e}")
+            return False

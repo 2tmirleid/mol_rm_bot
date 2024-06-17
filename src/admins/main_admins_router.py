@@ -95,3 +95,14 @@ async def process_admins_add_admin_phone(msg: Message, state: FSMContext) -> Non
 @router.message(StateFilter(CreateAdminState.phone), F.text)
 async def process_admins_add_admin_finish(msg: Message, state: FSMContext) -> None:
     await main_admins_controller.admins_add_admin_finish(msg=msg, state=state)
+
+
+@router.callback_query(lambda query: any(
+    edit_action in query.data for edit_action in [
+        callback_data['admin']['general']['delete'] + "_admins",
+    ]
+))
+async def process_admins_delete_admin(clb_query: CallbackQuery) -> None:
+    admin_id = str(clb_query.data.split("-")[1])
+
+    await main_admins_controller.admins_delete_admin(msg=clb_query.message, admin_id=admin_id)
