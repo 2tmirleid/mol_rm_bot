@@ -34,3 +34,15 @@ class AdminsEventsService:
             return self.cursor.fetchall()
         except Exception as e:
             print(f"Error while get count of events: {e}")
+
+    async def add_event(self, event: list) -> bool:
+        try:
+            self.cursor.execute(
+                await self.insert_for_admins.insert_event(event=event)
+            )
+            self.conn.commit()
+
+            return True
+        except Exception as e:
+            print(f"Error while add of event: {e}")
+            return False
