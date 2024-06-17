@@ -6,5 +6,5 @@ def create_admins_model() -> str:
         photo VARCHAR(255),
         name VARCHAR(255),
         description TEXT,
-        phone_number VARCHAR(255)
+        phone VARCHAR(255)
     );"""
