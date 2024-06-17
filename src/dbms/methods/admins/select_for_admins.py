@@ -9,7 +9,7 @@ class SelectForAdmins:
         return f"""SELECT _id FROM admins WHERE telegram_chat_id = '{chat_id}'"""
 
     async def select_all_programs(self, offset=0) -> str:
-        return f"""SELECT _id, photo, title, description, link, is_active FROM programs LIMIT 1 OFFSET {offset}"""
+        return f"""SELECT _id, photo, title, description, link, is_active FROM programs ORDER BY _id ASC LIMIT 1 OFFSET {offset}"""
 
     async def select_programs_count(self) -> str:
         return """SELECT COUNT(*) FROM programs"""
@@ -18,7 +18,7 @@ class SelectForAdmins:
         return f"""SELECT is_active FROM programs WHERE _id = '{program_id}'"""
 
     async def select_all_events(self, offset=0) -> str:
-        return f"""SELECT _id, photo, title, description, date, link, is_active FROM events LIMIT 1 OFFSET {offset}"""
+        return f"""SELECT _id, photo, title, description, date, link, is_active FROM events ORDER BY _id ASC LIMIT 1 OFFSET {offset} ORDER BY ASC"""
 
     async def select_events_count(self) -> str:
         return """SELECT COUNT(*) FROM events"""
@@ -27,7 +27,7 @@ class SelectForAdmins:
         return f"""SELECT is_active FROM events WHERE _id = '{event_id}'"""
 
     async def select_all_vacancies(self, offset=0) -> str:
-        return f"""SELECT _id, photo, title, description, link, is_active FROM vacancies LIMIT 1 OFFSET {offset}"""
+        return f"""SELECT _id, photo, title, description, link, is_active FROM vacancies ORDER BY _id ASC LIMIT 1 OFFSET {offset} ORDER BY ASC"""
 
     async def select_vacancies_count(self) -> str:
         return """SELECT COUNT(*) FROM vacancies"""
@@ -36,7 +36,7 @@ class SelectForAdmins:
         return f"""SELECT is_active FROM vacancies WHERE _id = '{vacancy_id}'"""
 
     async def select_all_admins(self, offset=0) -> str:
-        return f"""SELECT _id, photo, name, description, phone FROM admins LIMIT 1 OFFSET {offset}"""
+        return f"""SELECT _id, photo, name, description, phone FROM admins ORDER BY _id ASC LIMIT 1 OFFSET {offset} ORDER BY ASC"""
 
     async def select_admins_count(self) -> str:
         return """SELECT COUNT(*) FROM admins"""
