@@ -72,3 +72,14 @@ async def process_admins_add_event_event_link(msg: Message, state: FSMContext) -
 @router.message(StateFilter(CreateEventState.link), F.text)
 async def process_admins_add_event_event_link(msg: Message, state: FSMContext) -> None:
     await admins_events_controller.admins_add_event_finish(msg=msg, state=state)
+
+
+@router.callback_query(lambda query: any(
+    edit_action in query.data for edit_action in [
+        callback_data['admin']['general']['delete'] + "_events",
+    ]
+))
+async def process_admins_delete_event(clb_query: CallbackQuery) -> None:
+    event_id = str(clb_query.data.split("-")[1])
+
+    await admins_events_controller.admins_delete_event(msg=clb_query.message, event_id=event_id)

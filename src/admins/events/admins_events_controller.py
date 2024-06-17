@@ -203,3 +203,17 @@ class AdminsEventsController:
 
             await msg.answer(self.replicas['general']['error'],
                              reply_markup=back_to_main_menu_btn)
+
+    async def admins_delete_event(self, msg: Message, event_id: str) -> None:
+        delete_event = await self.admins_service.delete_event(event_id=event_id)
+
+        if delete_event:
+            await msg.answer(self.replicas['admin']['entities']['delete']['finish'])
+
+            await self.admins_get_events(msg=msg)
+        else:
+            back_to_main_menu_btn = await (self.admins_inline_keyboards.
+                                           admins_dynamic_entity_to_main_menu_panel_keyboard(markup=True))
+
+            await msg.answer(self.replicas['general']['error'],
+                             reply_markup=back_to_main_menu_btn)

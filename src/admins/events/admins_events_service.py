@@ -46,3 +46,16 @@ class AdminsEventsService:
         except Exception as e:
             print(f"Error while add of event: {e}")
             return False
+
+    async def delete_event(self, event_id: str) -> bool:
+        try:
+            self.cursor.execute(
+                await self.delete_for_admins.delete_event(event_id=event_id)
+            )
+
+            self.conn.commit()
+
+            return True
+        except Exception as e:
+            print(f"Error while deleting event: {e}")
+            return False

@@ -70,7 +70,11 @@ async def process_admins_add_program_finish(msg: Message, state: FSMContext) -> 
     await admins_programs_controller.admins_add_program_finish(msg=msg, state=state)
 
 
-@router.callback_query(F.data == callback_data['admin']['general']['delete'] + "_programs")
+@router.callback_query(lambda query: any(
+    edit_action in query.data for edit_action in [
+        callback_data['admin']['general']['delete'] + "_programs",
+    ]
+))
 async def process_admins_delete_program(clb_query: CallbackQuery) -> None:
     program_id = str(clb_query.data.split("-")[1])
 
