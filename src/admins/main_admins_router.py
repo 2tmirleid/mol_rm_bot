@@ -5,6 +5,7 @@ from aiogram.types import Message, CallbackQuery
 
 from src.admins.main_admins_controller import MainAdminsController
 from src.admins.states.admins.create_admin_state import CreateAdminState
+from src.admins.states.admins.edit_admin_state import EditAdminState
 from src.middlewares.admins_middleware import AdminsMiddleware
 from utils.lexicon.load_lexicon import load_lexicon
 
@@ -106,3 +107,35 @@ async def process_admins_delete_admin(clb_query: CallbackQuery) -> None:
     admin_id = str(clb_query.data.split("-")[1])
 
     await main_admins_controller.admins_delete_admin(msg=clb_query.message, admin_id=admin_id)
+
+
+@router.callback_query(lambda query: query.data.startswith(
+    callback_data['admin']['general']['edit']['main'] + "_admins"
+))
+async def process_admins_edit_admin(clb_query: CallbackQuery, state: FSMContext) -> None:
+    admin_id = str(clb_query.data.split("-")[1])
+
+    await main_admins_controller.admins_edit_admin(msg=clb_query.message,
+                                                   state=state,
+                                                   admin_id=admin_id)
+
+
+@router.callback_query(lambda query: any(
+    edit_action in query.data for edit_action in [
+        callback_data['admin']['general']['edit']['photo'] + "_admins",
+        callback_data['admin']['general']['edit']['name'] + "_admins",
+        callback_data['admin']['general']['edit']['description'] + "_admins",
+        callback_data['admin']['general']['edit']['phone'] + "_admins"
+    ]
+))
+async def process_admins_edit_admin_property(clb_query: CallbackQuery, state: FSMContext) -> None:
+    property = str(clb_query.data.split("_")[2])
+
+    await main_admins_controller.admins_edit_admin_property(msg=clb_query.message, state=state, property=property)
+
+
+@router.message(StateFilter(
+    EditAdminState.value
+), F.photo | F.text)
+async def process_admins_edit_admin_value(msg: Message, state: FSMContext) -> None:
+    await main_admins_controller.admins_edit_admin_value(msg=msg, state=state)

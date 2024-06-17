@@ -9,6 +9,7 @@ from src.admins.keyboards.inline.admins_inline_keyboards import AdminsInlineKeyb
 from src.admins.keyboards.reply.admins_reply_keyboards import AdminsReplyKeyboards
 from src.admins.main_admins_service import MainAdminsService
 from src.admins.states.admins.create_admin_state import CreateAdminState
+from src.admins.states.admins.edit_admin_state import EditAdminState
 from utils.lexicon.load_lexicon import load_lexicon
 from utils.pagen.pagen_builder import PagenBuilder
 
@@ -233,6 +234,69 @@ class MainAdminsController:
             await msg.answer(self.replicas['admin']['entities']['delete']['finish'])
 
             await self.admins_get_admins(msg=msg)
+        else:
+            back_to_main_menu_btn = await (self.admins_inline_keyboards.
+                                           admins_dynamic_entity_to_main_menu_panel_keyboard(markup=True))
+
+            await msg.answer(self.replicas['general']['error'],
+                             reply_markup=back_to_main_menu_btn)
+
+    async def admins_edit_admin(self, msg: Message, state: FSMContext, admin_id: str) -> None:
+        await state.set_state(EditAdminState.admin_id)
+
+        await state.update_data(admin_id=admin_id)
+
+        callback_data = "_admins"
+
+        edit_buttons = await (self.admins_inline_keyboards.
+                              admins_dynamic_edit_entity_keyboard(callback_data=callback_data, admins=True))
+
+        back_to_main_menu_btn = await (self.admins_inline_keyboards.
+                                       admins_dynamic_entity_to_main_menu_panel_keyboard())
+
+        keyboard = InlineKeyboardMarkup(inline_keyboard=[
+            *edit_buttons,
+            back_to_main_menu_btn
+        ])
+
+        await msg.answer(self.replicas['admin']['entities']['edit']['property'],
+                         reply_markup=keyboard)
+
+        await state.set_state(EditAdminState.property)
+
+    async def admins_edit_admin_property(self, msg: Message, state: FSMContext, property: str) -> None:
+        back_to_main_menu_btn = await (self.admins_inline_keyboards.
+                                       admins_dynamic_entity_to_main_menu_panel_keyboard(markup=True))
+
+        await state.update_data(property=property)
+
+        await msg.answer(self.replicas['admin']['entities']['edit']['value'],
+                         reply_markup=back_to_main_menu_btn)
+
+        await state.set_state(EditAdminState.value)
+
+    async def admins_edit_admin_value(self, msg: Message, state: FSMContext) -> None:
+        data = await state.get_data()
+
+        admin_id = data.get("admin_id")
+        property = data.get("property")
+        value = ""
+
+        if property == "photo":
+            if msg.photo[-1].file_id:
+                value = msg.photo[-1].file_id
+        else:
+            value = msg.text
+
+        update_admin = await self.admins_service.edit_admin(
+            admin_id=admin_id, property=property, value=value
+        )
+
+        await state.clear()
+
+        if update_admin:
+            await msg.answer(self.replicas['admin']['entities']['edit']['finish'],
+                             await self.admins_get_admins(msg=msg))
         else:
             back_to_main_menu_btn = await (self.admins_inline_keyboards.
                                            admins_dynamic_entity_to_main_menu_panel_keyboard(markup=True))

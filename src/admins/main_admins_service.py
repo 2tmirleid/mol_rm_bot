@@ -79,3 +79,16 @@ class MainAdminsService:
         except Exception as e:
             print(f"Error while deleting admin: {e}")
             return False
+
+    async def edit_admin(self, admin_id: str, property: str, value: str) -> bool:
+        try:
+            self.cursor.execute(
+                await self.update_for_admins.update_admin(admin_id=admin_id, property=property, value=value)
+            )
+
+            self.conn.commit()
+
+            return True
+        except Exception as e:
+            print(f"Error while update admin: {e}")
+            return False
