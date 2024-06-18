@@ -12,6 +12,7 @@ from src.admins.states.vacancies.edit_vacancy_state import EditVacancyState
 from src.admins.vacancies.admins_vacancies_service import AdminsVacanciesService
 from utils.lexicon.load_lexicon import load_lexicon
 from utils.pagen.pagen_builder import PagenBuilder
+from utils.validator import Validator
 
 
 class AdminsVacanciesController:
@@ -26,6 +27,8 @@ class AdminsVacanciesController:
 
         self.lexicon = load_lexicon()
         self.replicas = self.lexicon.get("replicas")
+
+        self.validator: Validator = Validator()
 
     async def admins_get_vacancies(self, msg: Message, offset=0, edit=False) -> None:
         try:
@@ -119,25 +122,33 @@ class AdminsVacanciesController:
         await state.set_state(CreateVacancyState.title)
 
     async def admins_add_vacancy_description(self, msg: Message, state: FSMContext) -> None:
-        await state.update_data(title=msg.text)
-
         back_to_main_menu_btn = await (self.admins_inline_keyboards.
                                        admins_dynamic_entity_to_main_menu_panel_keyboard(markup=True))
 
-        await msg.answer(self.replicas['admin']['entities']['create']['description'],
-                         reply_markup=back_to_main_menu_btn)
+        is_valid, result = await self.validator.validate_title(title=msg.text)
 
-        await state.set_state(CreateVacancyState.description)
+        if not is_valid:
+            await msg.answer(result)
+            await msg.answer(self.replicas['admin']['entities']['create']['title'],
+                             reply_markup=back_to_main_menu_btn)
+
+            await state.set_state(CreateVacancyState.title)
+        else:
+            await state.update_data(title=msg.text)
+
+            await msg.answer(self.replicas['admin']['entities']['create']['description'],
+                             reply_markup=back_to_main_menu_btn)
+
+            await state.set_state(CreateVacancyState.description)
 
     async def admins_add_vacancy_link(self, msg: Message, state: FSMContext) -> None:
         back_to_main_menu_btn = await (self.admins_inline_keyboards.
                                        admins_dynamic_entity_to_main_menu_panel_keyboard(markup=True))
 
-        max_chars_length = os.environ["MAX_CHARS_LENGTH"]
-        chars_length = re.findall(r".", msg.text)
+        is_valid, result = await self.validator.validate_description(description=msg.text)
 
-        if len(chars_length) > int(max_chars_length):
-            await msg.answer(self.replicas['general']['max_chars_length'] + f" {max_chars_length}")
+        if not is_valid:
+            await msg.answer(result)
             await msg.answer(self.replicas['admin']['entities']['create']['description'],
                              reply_markup=back_to_main_menu_btn)
 
@@ -151,36 +162,48 @@ class AdminsVacanciesController:
             await state.set_state(CreateVacancyState.link)
 
     async def admins_add_vacancy_finish(self, msg: Message, state: FSMContext) -> None:
-        await state.update_data(link=msg.text)
+        back_to_main_menu_btn = await (self.admins_inline_keyboards.
+                                       admins_dynamic_entity_to_main_menu_panel_keyboard(markup=True))
 
-        data = await state.get_data()
+        is_valid, result = await self.validator.validate_link(link=msg.text)
 
-        photo = data.get("photo")
-        title = data.get("title")
-        description = data.get("description")
-        link = data.get("link")
-
-        await state.clear()
-
-        vacancy = [
-            photo,
-            title,
-            description,
-            link
-        ]
-
-        insert_vacancy = await self.admins_service.add_vacancy(vacancy=vacancy)
-
-        if insert_vacancy:
-            await msg.answer(self.replicas['admin']['entities']['create']['finish'])
-
-            await self.admins_get_vacancies(msg=msg)
-        else:
-            back_to_main_menu_btn = await (self.admins_inline_keyboards.
-                                           admins_dynamic_entity_to_main_menu_panel_keyboard(markup=True))
-
-            await msg.answer(self.replicas['general']['error'],
+        if not is_valid:
+            await msg.answer(result)
+            await msg.answer(self.replicas['admin']['entities']['create']['link'],
                              reply_markup=back_to_main_menu_btn)
+
+            await state.set_state(CreateVacancyState.link)
+        else:
+            await state.update_data(link=msg.text)
+
+            data = await state.get_data()
+
+            photo = data.get("photo")
+            title = data.get("title")
+            description = data.get("description")
+            link = data.get("link")
+
+            await state.clear()
+
+            vacancy = [
+                photo,
+                title,
+                description,
+                link
+            ]
+
+            insert_vacancy = await self.admins_service.add_vacancy(vacancy=vacancy)
+
+            if insert_vacancy:
+                await msg.answer(self.replicas['admin']['entities']['create']['finish'])
+
+                await self.admins_get_vacancies(msg=msg)
+            else:
+                back_to_main_menu_btn = await (self.admins_inline_keyboards.
+                                               admins_dynamic_entity_to_main_menu_panel_keyboard(markup=True))
+
+                await msg.answer(self.replicas['general']['error'],
+                                 reply_markup=back_to_main_menu_btn)
 
     async def admins_delete_vacancy(self, msg: Message, vacancy_id: str) -> None:
         delete_vacancy = await self.admins_service.delete_vacancy(vacancy_id=vacancy_id)
@@ -248,6 +271,9 @@ class AdminsVacanciesController:
             await state.set_state(EditVacancyState.value)
 
     async def admins_edit_vacancy_value(self, msg: Message, state: FSMContext) -> None:
+        back_to_main_menu_btn = await (self.admins_inline_keyboards.
+                                       admins_dynamic_entity_to_main_menu_panel_keyboard(markup=True))
+
         data = await state.get_data()
 
         vacancy_id = data.get("vacancy_id")
@@ -257,8 +283,47 @@ class AdminsVacanciesController:
         if property == "photo":
             if msg.photo[-1].file_id:
                 value = msg.photo[-1].file_id
-        else:
-            value = msg.text
+        elif property == "title":
+            is_valid, result = await self.validator.validate_title(title=msg.text)
+
+            if not is_valid:
+                await msg.answer(result)
+                await msg.answer(self.replicas['admin']['entities']['edit']['value'],
+                                 reply_markup=back_to_main_menu_btn)
+
+                await state.set_state(EditVacancyState.value)
+
+                return
+            else:
+                value = msg.text
+
+        elif property == "description":
+            is_valid, result = await self.validator.validate_description(description=msg.text)
+
+            if not is_valid:
+                await msg.answer(result)
+                await msg.answer(self.replicas['admin']['entities']['edit']['value'],
+                                 reply_markup=back_to_main_menu_btn)
+
+                await state.set_state(EditVacancyState.value)
+
+                return
+            else:
+                value = msg.text
+
+        elif property == "link":
+            is_valid, result = await self.validator.validate_link(link=msg.text)
+
+            if not is_valid:
+                await msg.answer(result)
+                await msg.answer(self.replicas['admin']['entities']['edit']['value'],
+                                 reply_markup=back_to_main_menu_btn)
+
+                await state.set_state(EditVacancyState.value)
+
+                return
+            else:
+                value = msg.text
 
         update_vacancy = await self.admins_service.edit_vacancy(
             vacancy_id=vacancy_id, property=property, value=value
@@ -270,8 +335,5 @@ class AdminsVacanciesController:
             await msg.answer(self.replicas['admin']['entities']['edit']['finish'],
                              await self.admins_get_vacancies(msg=msg))
         else:
-            back_to_main_menu_btn = await (self.admins_inline_keyboards.
-                                           admins_dynamic_entity_to_main_menu_panel_keyboard(markup=True))
-
             await msg.answer(self.replicas['general']['error'],
                              reply_markup=back_to_main_menu_btn)
