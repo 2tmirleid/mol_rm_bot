@@ -26,7 +26,9 @@ async def process_admins_get_started(msg: Message) -> None:
 
 @router.message(F.text == buttons['admin']['other']['to_main_panel'])
 @router.callback_query(F.data == callback_data['admin']['other']['to_main_panel'])
-async def process_get_admins_main_menu_panel(event: Message | CallbackQuery) -> None:
+async def process_get_admins_main_menu_panel(event: Message | CallbackQuery, state: FSMContext) -> None:
+    await state.clear()
+
     if isinstance(event, Message):
         msg = event
 
