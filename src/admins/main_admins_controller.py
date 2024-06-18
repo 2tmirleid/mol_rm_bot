@@ -35,6 +35,9 @@ class MainAdminsController:
         await msg.answer(f"{self.greeting['admin']}",
                          reply_markup=self.admins_reply_keyboards.main_admins_to_menu_panel_keyboard())
 
+    async def admins_get_chat_id(self, msg: Message) -> None:
+        await msg.answer(f"{msg.from_user.id}")
+
     async def get_main_admins_main_menu_panel(self, msg: Message) -> None:
         await msg.answer(f"{self.replicas['admin']['other']['option']}",
                          reply_markup=self.admins_reply_keyboards.main_admins_menu_panel_keyboard())
