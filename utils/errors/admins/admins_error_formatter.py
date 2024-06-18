@@ -6,4 +6,5 @@ class AdminsErrorsFormatter:
         self.date_formatter: IBotEngineDateFormatter = IBotEngineDateFormatter()
 
     async def forbidden_access(self, interloper_id) -> str:
-        return f"[FORBIDDEN] - [{await self.date_formatter.get_date()}] - Пользователь с ID {interloper_id} пытался войти как администратор"
+        return (f"[FORBIDDEN] - [{await self.date_formatter.get_date()}] - Пользователь с ID {interloper_id} пытался "
+                f"войти как администратор")

@@ -11,6 +11,7 @@ from src.dbms.models.admins import create_admins_model
 from src.dbms.models.events import create_events_model
 from src.dbms.models.programs import create_programs_model
 from src.dbms.models.vacancies import create_vacancies_model
+from src.users import main_users_router
 from utils.ibot_engine_factory.factory import IBotEngineFactory
 
 """Main app class"""
@@ -25,7 +26,9 @@ class Main:
                                          main_admins_router.router,
                                          admins_programs_router.router,
                                          admins_events_router.router,
-                                         admins_vacancies_router.router
+                                         admins_vacancies_router.router,
+
+                                         main_users_router.router
                                      ],
                                      models=[
                                          create_admins_model,
