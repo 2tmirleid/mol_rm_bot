@@ -12,6 +12,7 @@ from src.admins.states.admins.create_admin_state import CreateAdminState
 from src.admins.states.admins.edit_admin_state import EditAdminState
 from utils.lexicon.load_lexicon import load_lexicon
 from utils.pagen.pagen_builder import PagenBuilder
+from utils.validator import Validator
 
 
 class MainAdminsController:
@@ -27,6 +28,8 @@ class MainAdminsController:
         self.lexicon = load_lexicon()
         self.greeting = self.lexicon.get("greetings")
         self.replicas = self.lexicon.get("replicas")
+
+        self.validator: Validator = Validator()
 
     async def admins_get_started(self, msg: Message) -> None:
         await msg.answer(f"{self.greeting['admin']}",
@@ -148,25 +151,33 @@ class MainAdminsController:
         await state.set_state(CreateAdminState.name)
 
     async def admins_add_admin_description(self, msg: Message, state: FSMContext) -> None:
-        await state.update_data(name=msg.text)
-
         back_to_main_menu_btn = await (self.admins_inline_keyboards.
                                        admins_dynamic_entity_to_main_menu_panel_keyboard(markup=True))
 
-        await msg.answer(self.replicas['admin']['entities']['create']['description'],
-                         reply_markup=back_to_main_menu_btn)
+        is_valid, result = await self.validator.validate_title(title=msg.text)
 
-        await state.set_state(CreateAdminState.description)
+        if not is_valid:
+            await msg.answer(result)
+            await msg.answer(self.replicas['admin']['entities']['create']['name'],
+                             reply_markup=back_to_main_menu_btn)
+
+            await state.set_state(CreateAdminState.name)
+        else:
+            await state.update_data(name=msg.text)
+
+            await msg.answer(self.replicas['admin']['entities']['create']['description'],
+                             reply_markup=back_to_main_menu_btn)
+
+            await state.set_state(CreateAdminState.description)
 
     async def admins_add_admin_phone(self, msg: Message, state: FSMContext) -> None:
         back_to_main_menu_btn = await (self.admins_inline_keyboards.
                                        admins_dynamic_entity_to_main_menu_panel_keyboard(markup=True))
 
-        max_chars_length = os.environ["MAX_CHARS_LENGTH"]
-        chars_length = re.findall(r".", msg.text)
+        is_valid, result = await self.validator.validate_description(description=msg.text)
 
-        if len(chars_length) > int(max_chars_length):
-            await msg.answer(self.replicas['general']['max_chars_length'] + f" {max_chars_length}")
+        if not is_valid:
+            await msg.answer(result)
             await msg.answer(self.replicas['admin']['entities']['create']['description'],
                              reply_markup=back_to_main_menu_btn)
 
@@ -186,10 +197,10 @@ class MainAdminsController:
         back_to_main_menu_btn = await (self.admins_inline_keyboards.
                                        admins_dynamic_entity_to_main_menu_panel_keyboard(markup=True))
 
-        phone_pattern = r'^\+7 \(\d{3}\) \d{3} \d{2}-\d{2}$'
+        is_valid, result = await self.validator.validate_phone(phone=msg.text)
 
-        if not re.match(phone_pattern, msg.text):
-            await msg.answer(self.replicas['general']['phone_pattern'])
+        if not is_valid:
+            await msg.answer(result)
             await msg.answer(self.replicas['admin']['entities']['create']['phone'],
                              reply_markup=back_to_main_menu_btn)
 
@@ -276,6 +287,9 @@ class MainAdminsController:
         await state.set_state(EditAdminState.value)
 
     async def admins_edit_admin_value(self, msg: Message, state: FSMContext) -> None:
+        back_to_main_menu_btn = await (self.admins_inline_keyboards.
+                                       admins_dynamic_entity_to_main_menu_panel_keyboard(markup=True))
+
         data = await state.get_data()
 
         admin_id = data.get("admin_id")
@@ -285,8 +299,47 @@ class MainAdminsController:
         if property == "photo":
             if msg.photo[-1].file_id:
                 value = msg.photo[-1].file_id
-        else:
-            value = msg.text
+        elif property == "name":
+            is_valid, result = await self.validator.validate_title(title=msg.text)
+
+            if not is_valid:
+                await msg.answer(result)
+                await msg.answer(self.replicas['admin']['entities']['edit']['value'],
+                                 reply_markup=back_to_main_menu_btn)
+
+                await state.set_state(EditAdminState.value)
+
+                return
+            else:
+                value = msg.text
+
+        elif property == "description":
+            is_valid, result = await self.validator.validate_description(description=msg.text)
+
+            if not is_valid:
+                await msg.answer(result)
+                await msg.answer(self.replicas['admin']['entities']['edit']['value'],
+                                 reply_markup=back_to_main_menu_btn)
+
+                await state.set_state(EditAdminState.value)
+
+                return
+            else:
+                value = msg.text
+
+        elif property == "phone":
+            is_valid, result = await self.validator.validate_phone(phone=msg.text)
+
+            if not is_valid:
+                await msg.answer(result)
+                await msg.answer(self.replicas['admin']['entities']['edit']['value'],
+                                 reply_markup=back_to_main_menu_btn)
+
+                await state.set_state(EditAdminState.value)
+
+                return
+            else:
+                value = msg.text
 
         update_admin = await self.admins_service.edit_admin(
             admin_id=admin_id, property=property, value=value
@@ -298,8 +351,5 @@ class MainAdminsController:
             await msg.answer(self.replicas['admin']['entities']['edit']['finish'],
                              await self.admins_get_admins(msg=msg))
         else:
-            back_to_main_menu_btn = await (self.admins_inline_keyboards.
-                                           admins_dynamic_entity_to_main_menu_panel_keyboard(markup=True))
-
             await msg.answer(self.replicas['general']['error'],
                              reply_markup=back_to_main_menu_btn)

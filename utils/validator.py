@@ -44,3 +44,11 @@ class Validator:
             return False, self.replicas['general']['max_chars_length'] + f" {max_link_chars_length}"
         else:
             return True, ""
+
+    async def validate_phone(self, phone: str) -> (bool, str):
+        phone_pattern = r'^\+7 \(\d{3}\) \d{3} \d{2}-\d{2}$'
+
+        if not re.match(phone_pattern, phone):
+            return False, self.replicas['general']['phone_pattern']
+        else:
+            return True, ""
