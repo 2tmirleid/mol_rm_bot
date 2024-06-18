@@ -12,6 +12,7 @@ from src.admins.states.programs.create_program_state import CreateProgramState
 from src.admins.states.programs.edit_program_state import EditProgramState
 from utils.lexicon.load_lexicon import load_lexicon
 from utils.pagen.pagen_builder import PagenBuilder
+from utils.validator import Validator
 
 
 class AdminsProgramsController:
@@ -26,6 +27,8 @@ class AdminsProgramsController:
 
         self.lexicon = load_lexicon()
         self.replicas = self.lexicon.get("replicas")
+
+        self.validator: Validator = Validator()
 
     async def admins_get_programs(self, msg: Message, offset=0, edit=False) -> None:
         try:
@@ -119,25 +122,36 @@ class AdminsProgramsController:
         await state.set_state(CreateProgramState.title)
 
     async def admins_add_program_description(self, msg: Message, state: FSMContext) -> None:
-        await state.update_data(title=msg.text)
-
         back_to_main_menu_btn = await (self.admins_inline_keyboards.
                                        admins_dynamic_entity_to_main_menu_panel_keyboard(markup=True))
 
-        await msg.answer(self.replicas['admin']['entities']['create']['description'],
-                         reply_markup=back_to_main_menu_btn)
+        is_valid, result = await self.validator.validate_title(title=msg.text)
 
-        await state.set_state(CreateProgramState.description)
+        if not is_valid:
+            await msg.answer(result)
+            await msg.answer(self.replicas['admin']['entities']['create']['title'],
+                             reply_markup=back_to_main_menu_btn)
+
+            await state.set_state(CreateProgramState.title)
+        else:
+            await state.update_data(title=msg.text)
+
+            back_to_main_menu_btn = await (self.admins_inline_keyboards.
+                                           admins_dynamic_entity_to_main_menu_panel_keyboard(markup=True))
+
+            await msg.answer(self.replicas['admin']['entities']['create']['description'],
+                             reply_markup=back_to_main_menu_btn)
+
+            await state.set_state(CreateProgramState.description)
 
     async def admins_add_program_link(self, msg: Message, state: FSMContext) -> None:
         back_to_main_menu_btn = await (self.admins_inline_keyboards.
                                        admins_dynamic_entity_to_main_menu_panel_keyboard(markup=True))
 
-        max_chars_length = os.environ["MAX_CHARS_LENGTH"]
-        chars_length = re.findall(r".", msg.text)
+        is_valid, result = await self.validator.validate_description(description=msg.text)
 
-        if len(chars_length) > int(max_chars_length):
-            await msg.answer(self.replicas['general']['max_chars_length'] + f" {max_chars_length}")
+        if not is_valid:
+            await msg.answer(result)
             await msg.answer(self.replicas['admin']['entities']['create']['description'],
                              reply_markup=back_to_main_menu_btn)
 
@@ -151,36 +165,48 @@ class AdminsProgramsController:
             await state.set_state(CreateProgramState.link)
 
     async def admins_add_program_finish(self, msg: Message, state: FSMContext) -> None:
-        await state.update_data(link=msg.text)
+        back_to_main_menu_btn = await (self.admins_inline_keyboards.
+                                       admins_dynamic_entity_to_main_menu_panel_keyboard(markup=True))
 
-        data = await state.get_data()
+        is_valid, result = await self.validator.validate_link(link=msg.text)
 
-        photo = data.get("photo")
-        title = data.get("title")
-        description = data.get("description")
-        link = data.get("link")
-
-        await state.clear()
-
-        program = [
-            photo,
-            title,
-            description,
-            link
-        ]
-
-        insert_program = await self.admins_service.add_program(program=program)
-
-        if insert_program:
-            await msg.answer(self.replicas['admin']['entities']['create']['finish'])
-
-            await self.admins_get_programs(msg=msg)
-        else:
-            back_to_main_menu_btn = await (self.admins_inline_keyboards.
-                                           admins_dynamic_entity_to_main_menu_panel_keyboard(markup=True))
-
-            await msg.answer(self.replicas['general']['error'],
+        if not is_valid:
+            await msg.answer(result)
+            await msg.answer(self.replicas['admin']['entities']['create']['link'],
                              reply_markup=back_to_main_menu_btn)
+
+            await state.set_state(CreateProgramState.link)
+        else:
+            await state.update_data(link=msg.text)
+
+            data = await state.get_data()
+
+            photo = data.get("photo")
+            title = data.get("title")
+            description = data.get("description")
+            link = data.get("link")
+
+            await state.clear()
+
+            program = [
+                photo,
+                title,
+                description,
+                link
+            ]
+
+            insert_program = await self.admins_service.add_program(program=program)
+
+            if insert_program:
+                await msg.answer(self.replicas['admin']['entities']['create']['finish'])
+
+                await self.admins_get_programs(msg=msg)
+            else:
+                back_to_main_menu_btn = await (self.admins_inline_keyboards.
+                                               admins_dynamic_entity_to_main_menu_panel_keyboard(markup=True))
+
+                await msg.answer(self.replicas['general']['error'],
+                                 reply_markup=back_to_main_menu_btn)
 
     async def admins_delete_program(self, msg: Message, program_id: str) -> None:
         delete_program = await self.admins_service.delete_program(program_id=program_id)
@@ -248,6 +274,9 @@ class AdminsProgramsController:
             await state.set_state(EditProgramState.value)
 
     async def admins_edit_program_value(self, msg: Message, state: FSMContext) -> None:
+        back_to_main_menu_btn = await (self.admins_inline_keyboards.
+                                       admins_dynamic_entity_to_main_menu_panel_keyboard(markup=True))
+
         data = await state.get_data()
 
         program_id = data.get("program_id")
@@ -257,8 +286,47 @@ class AdminsProgramsController:
         if property == "photo":
             if msg.photo[-1].file_id:
                 value = msg.photo[-1].file_id
-        else:
-            value = msg.text
+        elif property == "title":
+            is_valid, result = await self.validator.validate_title(title=msg.text)
+
+            if not is_valid:
+                await msg.answer(result)
+                await msg.answer(self.replicas['admin']['entities']['edit']['value'],
+                                 reply_markup=back_to_main_menu_btn)
+
+                await state.set_state(EditProgramState.value)
+
+                return
+            else:
+                value = msg.text
+
+        elif property == "description":
+            is_valid, result = await self.validator.validate_description(description=msg.text)
+
+            if not is_valid:
+                await msg.answer(result)
+                await msg.answer(self.replicas['admin']['entities']['edit']['value'],
+                                 reply_markup=back_to_main_menu_btn)
+
+                await state.set_state(EditProgramState.value)
+
+                return
+            else:
+                value = msg.text
+
+        elif property == "link":
+            is_valid, result = await self.validator.validate_link(link=msg.text)
+
+            if not is_valid:
+                await msg.answer(result)
+                await msg.answer(self.replicas['admin']['entities']['edit']['value'],
+                                 reply_markup=back_to_main_menu_btn)
+
+                await state.set_state(EditProgramState.value)
+
+                return
+            else:
+                value = msg.text
 
         update_program = await self.admins_service.edit_program(
             program_id=program_id, property=property, value=value
@@ -270,8 +338,5 @@ class AdminsProgramsController:
             await msg.answer(self.replicas['admin']['entities']['edit']['finish'],
                              await self.admins_get_programs(msg=msg))
         else:
-            back_to_main_menu_btn = await (self.admins_inline_keyboards.
-                                           admins_dynamic_entity_to_main_menu_panel_keyboard(markup=True))
-
             await msg.answer(self.replicas['general']['error'],
                              reply_markup=back_to_main_menu_btn)
