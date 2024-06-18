@@ -12,6 +12,7 @@ from src.admins.states.events.create_event_state import CreateEventState
 from src.admins.states.events.edit_event_state import EditEventState
 from utils.lexicon.load_lexicon import load_lexicon
 from utils.pagen.pagen_builder import PagenBuilder
+from utils.validator import Validator
 
 
 class AdminsEventsController:
@@ -26,6 +27,8 @@ class AdminsEventsController:
 
         self.lexicon = load_lexicon()
         self.replicas = self.lexicon.get("replicas")
+
+        self.validator: Validator = Validator()
 
     async def admins_get_events(self, msg: Message, offset=0, edit=False) -> None:
         try:
@@ -67,7 +70,7 @@ class AdminsEventsController:
                            f"Дата проведения: {events[0][4]}\n\n" \
                            f"Ссылка: {events[0][5]}\n\n" \
                            f"Активность: {"Активно" if events[0][6]
-                                                    else "Не активно"}"
+                           else "Не активно"}"
 
                 if edit:
                     media = InputMediaPhoto(media=photo, caption=msg_text)
@@ -120,25 +123,33 @@ class AdminsEventsController:
         await state.set_state(CreateEventState.title)
 
     async def admins_add_event_description(self, msg: Message, state: FSMContext) -> None:
-        await state.update_data(title=msg.text)
-
         back_to_main_menu_btn = await (self.admins_inline_keyboards.
                                        admins_dynamic_entity_to_main_menu_panel_keyboard(markup=True))
 
-        await msg.answer(self.replicas['admin']['entities']['create']['description'],
-                         reply_markup=back_to_main_menu_btn)
+        is_valid, result = await self.validator.validate_title(title=msg.text)
 
-        await state.set_state(CreateEventState.description)
+        if not is_valid:
+            await msg.answer(result)
+            await msg.answer(self.replicas['admin']['entities']['create']['title'],
+                             reply_markup=back_to_main_menu_btn)
+
+            await state.set_state(CreateEventState.title)
+        else:
+            await state.update_data(title=msg.text)
+
+            await msg.answer(self.replicas['admin']['entities']['create']['description'],
+                             reply_markup=back_to_main_menu_btn)
+
+            await state.set_state(CreateEventState.description)
 
     async def admins_add_event_date(self, msg: Message, state: FSMContext) -> None:
         back_to_main_menu_btn = await (self.admins_inline_keyboards.
                                        admins_dynamic_entity_to_main_menu_panel_keyboard(markup=True))
 
-        max_chars_length = os.environ["MAX_CHARS_LENGTH"]
-        chars_length = re.findall(r".", msg.text)
+        is_valid, result = await self.validator.validate_description(description=msg.text)
 
-        if len(chars_length) > int(max_chars_length):
-            await msg.answer(self.replicas['general']['max_chars_length'] + f" {max_chars_length}")
+        if not is_valid:
+            await msg.answer(result)
             await msg.answer(self.replicas['admin']['entities']['create']['description'],
                              reply_markup=back_to_main_menu_btn)
 
@@ -155,55 +166,64 @@ class AdminsEventsController:
         back_to_main_menu_btn = await (self.admins_inline_keyboards.
                                        admins_dynamic_entity_to_main_menu_panel_keyboard(markup=True))
 
-        date_pattern = r"^(0[1-9]|[12][0-9]|3[01])-(0[1-9]|1[0-2])-(19|20)\d\d$"
+        is_valid, result = await self.validator.validate_date(date=msg.text)
 
-        if bool(re.match(date_pattern, msg.text)):
+        if not is_valid:
+            await msg.answer(result)
+            await msg.answer(self.replicas['admin']['entities']['create']['date'],
+                             reply_markup=back_to_main_menu_btn)
+
+            await state.set_state(CreateEventState.event_date)
+        else:
             await state.update_data(event_date=msg.text)
 
             await msg.answer(self.replicas['admin']['entities']['create']['link'],
                              reply_markup=back_to_main_menu_btn)
 
             await state.set_state(CreateEventState.link)
-        else:
-            await msg.answer(self.replicas['general']['date_pattern'])
-            await msg.answer(self.replicas['admin']['entities']['create']['date'],
-                             reply_markup=back_to_main_menu_btn)
-
-            await state.set_state(CreateEventState.event_date)
 
     async def admins_add_event_finish(self, msg: Message, state: FSMContext) -> None:
-        await state.update_data(link=msg.text)
+        back_to_main_menu_btn = await (self.admins_inline_keyboards.
+                                       admins_dynamic_entity_to_main_menu_panel_keyboard(markup=True))
 
-        data = await state.get_data()
+        is_valid, result = await self.validator.validate_link(link=msg.text)
 
-        photo = data.get("photo")
-        title = data.get("title")
-        description = data.get("description")
-        event_date = data.get("event_date")
-        link = data.get("link")
-
-        await state.clear()
-
-        event = [
-            photo,
-            title,
-            description,
-            event_date,
-            link
-        ]
-
-        insert_event = await self.admins_service.add_event(event=event)
-
-        if insert_event:
-            await msg.answer(self.replicas['admin']['entities']['create']['finish'])
-
-            await self.admins_get_events(msg=msg)
-        else:
-            back_to_main_menu_btn = await (self.admins_inline_keyboards.
-                                           admins_dynamic_entity_to_main_menu_panel_keyboard(markup=True))
-
-            await msg.answer(self.replicas['general']['error'],
+        if not is_valid:
+            await msg.answer(result)
+            await msg.answer(self.replicas['admin']['entities']['create']['link'],
                              reply_markup=back_to_main_menu_btn)
+
+            await state.set_state(CreateEventState.link)
+        else:
+            await state.update_data(link=msg.text)
+
+            data = await state.get_data()
+
+            photo = data.get("photo")
+            title = data.get("title")
+            description = data.get("description")
+            event_date = data.get("event_date")
+            link = data.get("link")
+
+            await state.clear()
+
+            event = [
+                photo,
+                title,
+                description,
+                event_date,
+                link
+            ]
+
+            insert_event = await self.admins_service.add_event(event=event)
+
+            if insert_event:
+                await msg.answer(self.replicas['admin']['entities']['create']['finish'])
+
+                await self.admins_get_events(msg=msg)
+            else:
+                await msg.answer(self.replicas['general']['error'],
+                                 reply_markup=back_to_main_menu_btn)
 
     async def admins_delete_event(self, msg: Message, event_id: str) -> None:
         delete_event = await self.admins_service.delete_event(event_id=event_id)
@@ -284,27 +304,65 @@ class AdminsEventsController:
             if msg.photo[-1].file_id:
                 value = msg.photo[-1].file_id
         elif property == "date":
-            date_pattern = r"^(0[1-9]|[12][0-9]|3[01])-(0[1-9]|1[0-2])-(19|20)\d\d$"
+            is_valid, result = await self.validator.validate_date(date=msg.text)
 
-            if bool(re.match(date_pattern, msg.text)):
-                value = msg.text
-            else:
-                await msg.answer(self.replicas['general']['date_pattern'])
+            if not is_valid:
+                await msg.answer(result)
                 await msg.answer(self.replicas['admin']['entities']['edit']['value'],
                                  reply_markup=back_to_main_menu_btn)
 
                 await state.set_state(EditEventState.value)
 
                 return
-        else:
-            value = msg.text
+            else:
+                value = msg.text
+
+        elif property == "title":
+            is_valid, result = await self.validator.validate_title(title=msg.text)
+
+            if not is_valid:
+                await msg.answer(result)
+                await msg.answer(self.replicas['admin']['entities']['edit']['value'],
+                                 reply_markup=back_to_main_menu_btn)
+
+                await state.set_state(EditEventState.value)
+
+                return
+            else:
+                value = msg.text
+
+        elif property == "description":
+            is_valid, result = await self.validator.validate_description(description=msg.text)
+
+            if not is_valid:
+                await msg.answer(result)
+                await msg.answer(self.replicas['admin']['entities']['edit']['value'],
+                                 reply_markup=back_to_main_menu_btn)
+
+                await state.set_state(EditEventState.value)
+
+                return
+            else:
+                value = msg.text
+
+        elif property == "link":
+            is_valid, result = await self.validator.validate_link(link=msg.text)
+
+            if not is_valid:
+                await msg.answer(result)
+                await msg.answer(self.replicas['admin']['entities']['edit']['value'],
+                                 reply_markup=back_to_main_menu_btn)
+
+                await state.set_state(EditEventState.value)
+
+                return
+            else:
+                value = msg.text
 
         update_event = await self.admins_service.edit_event(
             event_id=event_id, property=property, value=value
         )
-
         await state.clear()
-
         if update_event:
             await msg.answer(self.replicas['admin']['entities']['edit']['finish'],
                              await self.admins_get_events(msg=msg))
