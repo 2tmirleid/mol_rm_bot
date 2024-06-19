@@ -19,7 +19,7 @@ class UsersVacanciesController:
 
         self.users_service: UsersVacanciesService = UsersVacanciesService()
 
-    async def users_get_vacancies(self, msg: Message, offset=0, edit=False) -> None:
+    async def users_get_active_vacancies(self, msg: Message, offset=0, edit=False) -> None:
         try:
             vacancies = await self.users_service.get_active_vacancies(offset=offset)
             vacancies_count = await self.users_service.get_active_vacancies_count()

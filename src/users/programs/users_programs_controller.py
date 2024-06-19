@@ -19,7 +19,7 @@ class UsersProgramsController:
 
         self.users_service: UsersProgramsService = UsersProgramsService()
 
-    async def users_get_programs(self, msg: Message, offset=0, edit=False) -> None:
+    async def users_get_active_programs(self, msg: Message, offset=0, edit=False) -> None:
         try:
             back_to_main_menu_btn = await (self.users_inline_keyboards.
                                            users_dynamic_entity_to_main_menu_panel_keyboard())

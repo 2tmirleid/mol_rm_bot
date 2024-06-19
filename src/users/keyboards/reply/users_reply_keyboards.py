@@ -58,7 +58,20 @@ class UsersReplyKeyboards:
             keyboard=[
                 [KeyboardButton(text=take_part_btn_text),
                  KeyboardButton(text=partners_btn_text)],
-                 [KeyboardButton(text=backward_btn_text)]
+                [KeyboardButton(text=backward_btn_text)]
+            ],
+            resize_keyboard=True,
+            one_time_keyboard=True
+        )
+
+    async def users_events_panel_keyboard(self) -> ReplyKeyboardMarkup:
+        calendar_btn_text = self.buttons['users']['events']['calendar']
+        backward_btn_text = self.buttons['users']['other']['to_main_panel']
+
+        return ReplyKeyboardMarkup(
+            keyboard=[
+                [KeyboardButton(text=calendar_btn_text),
+                 KeyboardButton(text=backward_btn_text)]
             ],
             resize_keyboard=True,
             one_time_keyboard=True

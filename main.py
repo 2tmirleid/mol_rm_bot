@@ -12,6 +12,7 @@ from src.dbms.models.events import create_events_model
 from src.dbms.models.programs import create_programs_model
 from src.dbms.models.vacancies import create_vacancies_model
 from src.users import main_users_router
+from src.users.events import users_events_router
 from src.users.programs import users_programs_router
 from src.users.reservation import users_reservation_router
 from src.users.vacancies import users_vacancies_router
@@ -35,6 +36,7 @@ class Main:
                                          users_reservation_router.router,
                                          users_programs_router.router,
                                          users_vacancies_router.router,
+                                         users_events_router.router
                                      ],
                                      models=[
                                          create_admins_model,

@@ -6,7 +6,7 @@ replicas:
   general:
     error: "Что-то пошло не так..."
     max_chars_length: "Количество символов не должно быть больше"
-    date_pattern: "Введен неверный формат даты (ДД-ММ-ГГГГ)"
+    date_pattern: "Введен неверный формат даты (ГГГГ-ММ-ДД)"
     phone_pattern: "Введен неверный формат номера телефона (+7 (XXX) XXX XX-XX)"
   admin:
     other:
@@ -21,7 +21,7 @@ replicas:
         username: "Отправьте никнейм добавляемого администратора в телеграме"
         description: "Отправьте описание"
         phone: "Отправьте номер телефона добавляемого администратора в формате +7 (XXX) XXX XX-XX"
-        date: "Отправьте дату проведения в формате ДД-ММ-ГГГГ"
+        date: "Отправьте дату проведения в формате ГГГГ-ММ-ДД"
         link: "Отправьте ссылку"
         finish: "Успешно добавлено!"
       edit:
@@ -82,6 +82,9 @@ buttons:
       respond: "[эмодзи] Откликнуться"
       take_part: "[эмодзи] Стать частью команды"
       partners: "[эмодзи] Вакансии партнеров"
+    events:
+      take_part: "[эмодзи] Участвовать"
+      calendar: "[эмодзи] Календарь событий"
 
 callback_data:
   admin:
@@ -119,3 +122,5 @@ callback_data:
         take_part: "https://google.com/"
         # Вакансии партнеров
         partners: "https://google.com/"
+      events:
+        calendar: "https://google.com/"

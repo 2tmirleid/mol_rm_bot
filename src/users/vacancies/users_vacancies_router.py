@@ -15,7 +15,7 @@ users_vacancies_controller: UsersVacanciesController = UsersVacanciesController(
 
 @router.message(F.text == buttons['users']['main_panel']['vacancies'])
 async def process_users_get_active_vacancies(msg: Message) -> None:
-    await users_vacancies_controller.users_get_vacancies(msg)
+    await users_vacancies_controller.users_get_active_vacancies(msg)
 
 
 @router.message(F.text == buttons['users']['vacancies']['take_part'])
@@ -34,9 +34,9 @@ async def process_users_pagen_next_vacancies(clb_query: CallbackQuery) -> None:
 
     offset = int(offset_split) + 1
 
-    await users_vacancies_controller.users_get_vacancies(msg=clb_query.message,
-                                                         offset=offset,
-                                                         edit=True)
+    await users_vacancies_controller.users_get_active_vacancies(msg=clb_query.message,
+                                                                offset=offset,
+                                                                edit=True)
 
 
 @router.callback_query(lambda query: query.data.startswith("users_pagen_backward_vacancies"))
@@ -44,6 +44,6 @@ async def process_users_pagen_backward_vacancies(clb_query: CallbackQuery) -> No
     offset_split = str(clb_query.data.split("-")[1])
     offset = int(offset_split) - 1
 
-    await users_vacancies_controller.users_get_vacancies(msg=clb_query.message,
-                                                         offset=offset,
-                                                         edit=True)
+    await users_vacancies_controller.users_get_active_vacancies(msg=clb_query.message,
+                                                                offset=offset,
+                                                                edit=True)
