@@ -77,6 +77,10 @@ class UsersProgramsController:
 
     async def users_get_useful_docs(self, msg: Message) -> None:
         keyboard = await self.users_inline_keyboards.users_redirect_to_useful_docs()
+        main_menu_keyboard = await self.users_reply_keyboards.main_users_to_menu_panel_keyboard()
 
         await msg.answer(self.replicas['users']['other']['redirect'],
                          reply_markup=keyboard)
+
+        await msg.answer(self.replicas['users']['other']['option'],
+                         reply_markup=main_menu_keyboard)
