@@ -21,9 +21,6 @@ class UsersVacanciesController:
 
     async def users_get_vacancies(self, msg: Message, offset=0, edit=False) -> None:
         try:
-            back_to_main_menu_btn = await (self.users_inline_keyboards.
-                                           users_dynamic_entity_to_main_menu_panel_keyboard())
-
             vacancies = await self.users_service.get_active_vacancies(offset=offset)
             vacancies_count = await self.users_service.get_active_vacancies_count()
 
@@ -65,6 +62,12 @@ class UsersVacanciesController:
 
                     await msg.answer(self.replicas['users']['other']['option'],
                                      reply_markup=keyboard)
+            else:
+                back_to_main_menu_btn = await (self.users_inline_keyboards.
+                                               users_dynamic_entity_to_main_menu_panel_keyboard(markup=True))
+
+                await msg.answer(self.replicas['users']['other']['empty'],
+                                 reply_markup=back_to_main_menu_btn)
 
         except Exception as e:
             print(f"Error while getting vacancies by user: {e}")
