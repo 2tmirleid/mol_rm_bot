@@ -48,3 +48,18 @@ class UsersReplyKeyboards:
             resize_keyboard=True,
             one_time_keyboard=True
         )
+
+    async def users_vacancies_panel_keyboard(self) -> ReplyKeyboardMarkup:
+        take_part_btn_text = self.buttons['users']['vacancies']['take_part']
+        partners_btn_text = self.buttons['users']['vacancies']['partners']
+        backward_btn_text = self.buttons['users']['other']['to_main_panel']
+
+        return ReplyKeyboardMarkup(
+            keyboard=[
+                [KeyboardButton(text=take_part_btn_text),
+                 KeyboardButton(text=partners_btn_text)],
+                 [KeyboardButton(text=backward_btn_text)]
+            ],
+            resize_keyboard=True,
+            one_time_keyboard=True
+        )

@@ -25,6 +25,22 @@ class UsersInlineKeyboards:
             ]
         )
 
+    async def users_redirect_take_part_vacancies(self):
+        return InlineKeyboardMarkup(
+            inline_keyboard=[
+                [InlineKeyboardButton(text=self.buttons['users']['vacancies']['take_part'],
+                                      url=self.callback_data['users']['url']['vacancies']['take_part'])]
+            ]
+        )
+
+    async def users_redirect_partners_vacancies(self):
+        return InlineKeyboardMarkup(
+            inline_keyboard=[
+                [InlineKeyboardButton(text=self.buttons['users']['vacancies']['partners'],
+                                      url=self.callback_data['users']['url']['vacancies']['partners'])]
+            ]
+        )
+
     async def users_dynamic_entity_to_main_menu_panel_keyboard(
             self, markup: bool = False
     ) -> list or InlineKeyboardMarkup:
@@ -50,3 +66,9 @@ class UsersInlineKeyboards:
             InlineKeyboardButton(text=btn_text, url=url)
         ]
 
+    async def users_vacancies_entity_keyboard(self, url: str) -> list:
+        btn_text = self.buttons['users']['vacancies']['respond']
+
+        return [
+            InlineKeyboardButton(text=btn_text, url=url)
+        ]

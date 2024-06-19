@@ -14,6 +14,7 @@ from src.dbms.models.vacancies import create_vacancies_model
 from src.users import main_users_router
 from src.users.programs import users_programs_router
 from src.users.reservation import users_reservation_router
+from src.users.vacancies import users_vacancies_router
 from utils.ibot_engine_factory.factory import IBotEngineFactory
 
 """Main app class"""
@@ -32,7 +33,8 @@ class Main:
 
                                          main_users_router.router,
                                          users_reservation_router.router,
-                                         users_programs_router.router
+                                         users_programs_router.router,
+                                         users_vacancies_router.router,
                                      ],
                                      models=[
                                          create_admins_model,

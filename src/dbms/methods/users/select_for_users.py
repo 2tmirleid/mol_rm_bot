@@ -7,3 +7,9 @@ class SelectForUsers:
 
     async def select_programs_count(self) -> str:
         return """SELECT COUNT(*) FROM programs WHERE is_active = TRUE"""
+
+    async def select_active_vacancies(self, offset=0) -> str:
+        return f"""SELECT photo, title, description, link FROM vacancies WHERE is_active = TRUE ORDER BY _id ASC LIMIT 1 OFFSET {offset}"""\
+
+    async def select_vacancies_count(self) -> str:
+        return """SELECT COUNT(*) FROM vacancies WHERE is_active = TRUE"""

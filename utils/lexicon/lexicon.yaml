@@ -77,7 +77,10 @@ buttons:
       take_part: "[эмодзи] Участвовать"
       useful: "[эмодзи] Полезное"
       redirect: "Полезные документы"
-
+    vacancies:
+      respond: "[эмодзи] Откликнуться"
+      take_part: "[эмодзи] Стать частью команды"
+      partners: "[эмодзи] Вакансии партнеров"
 
 callback_data:
   admin:
@@ -110,3 +113,8 @@ callback_data:
         redirect: "https://mol-rm.ru/reservation/"
       programs:
         redirect: "https://mol-rm.ru/about/docs/"
+      vacancies:
+        # Редирект на лонгрид с актуальными вакансиями
+        take_part: "https://google.com/"
+        # Вакансии партнеров
+        partners: "https://google.com/"
