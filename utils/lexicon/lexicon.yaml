@@ -85,6 +85,9 @@ buttons:
     events:
       take_part: "[эмодзи] Участвовать"
       calendar: "[эмодзи] Календарь событий"
+    contacts:
+      call: "[эмодзи] Связаться"
+      ask: "[эмодзи] Задай свой вопрос"
 
 callback_data:
   admin:
@@ -124,3 +127,5 @@ callback_data:
         partners: "https://google.com/"
       events:
         calendar: "https://google.com/"
+      contacts:
+        ask: "https://google.com/"

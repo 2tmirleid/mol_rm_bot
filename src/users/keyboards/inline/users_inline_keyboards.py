@@ -49,6 +49,14 @@ class UsersInlineKeyboards:
             ]
         )
 
+    async def users_redirect_ask_question(self):
+        return InlineKeyboardMarkup(
+            inline_keyboard=[
+                [InlineKeyboardButton(text=self.buttons['users']['contacts']['ask'],
+                                      url=self.callback_data['users']['url']['contacts']['ask'])]
+            ]
+        )
+
     async def users_dynamic_entity_to_main_menu_panel_keyboard(
             self, markup: bool = False
     ) -> list or InlineKeyboardMarkup:
@@ -86,4 +94,11 @@ class UsersInlineKeyboards:
 
         return [
             InlineKeyboardButton(text=btn_text, url=url)
+        ]
+
+    async def users_contacts_entity_keyboard(self, phone: str) -> list:
+        phone_btn_text = self.buttons['users']['contacts']['call']
+
+        return [
+            InlineKeyboardButton(text=phone_btn_text, callback_data=f"tel_{phone}")
         ]

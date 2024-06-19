@@ -19,3 +19,9 @@ class SelectForUsers:
 
     async def select_events_count(self, first_day, last_week_day) -> str:
         return f"""SELECT COUNT(*) FROM events WHERE is_active = TRUE AND date >= '{first_day}' AND date <= '{last_week_day}'"""
+
+    async def select_contacts(self, offset=0) -> str:
+        return f"""SELECT photo, name, description, phone FROM admins ORDER BY _id ASC LIMIT 1 OFFSET {offset}"""\
+
+    async def select_contacts_count(self) -> str:
+        return """SELECT COUNT(*) FROM admins"""
