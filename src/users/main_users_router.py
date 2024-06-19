@@ -21,7 +21,7 @@ async def process_users_get_started(msg: Message) -> None:
 
 
 @router.message(F.text == buttons['users']['other']['to_main_panel'])
-# @router.callback_query(F.data == callback_data['users']['other']['to_main_panel'])
+@router.callback_query(F.data == callback_data['users']['other']['to_main_panel'])
 async def process_get_users_main_menu_panel(event: Message | CallbackQuery) -> None:
     if isinstance(event, Message):
         msg = event
@@ -31,3 +31,5 @@ async def process_get_users_main_menu_panel(event: Message | CallbackQuery) -> N
         msg = event.message
 
         await main_users_controller.get_main_users_main_menu_panel(msg)
+
+
