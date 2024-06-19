@@ -14,5 +14,5 @@ class UsersReservationController:
     async def users_reservation_redirect(self, msg: Message) -> None:
         keyboard = await self.users_inline_keyboards.users_redirect_to_reservation_keyboard()
 
-        await msg.answer(self.replicas['users']['reservation']['redirect'],
+        await msg.answer(self.replicas['users']['other']['redirect'],
                          reply_markup=keyboard)
