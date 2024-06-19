@@ -33,6 +33,8 @@ replicas:
   users:
     other:
       option: "Выберите пункт меню"
+    reservation:
+      redirect: "Чтобы забронировать помещение, перейдите по ссылке ниже 🔽"
 
 buttons:
   pagen:
@@ -69,6 +71,8 @@ buttons:
       vacancies: "[эмодзи] Найти работу мечты"
       reservation: "[эмодзи] Забронировать помещение"
       contacts: "[эмодзи] Контакты"
+    reservation:
+      redirect: "Забронировать"
 
 callback_data:
   admin:
@@ -90,3 +94,7 @@ callback_data:
       delete: "admins_delete"
     other:
       to_main_panel: "admins_back_to_main_menu"
+  users:
+    url:
+      reservation:
+        redirect: "https://mol-rm.ru/reservation/"
