@@ -50,18 +50,19 @@ class UsersContactsController:
                 photo = contacts[0][0]
 
                 msg_text = f"{offset + 1} из {pages}\n\n" \
-                           f"Имя: {contacts[0][1]}\n\n" \
-                           f"Описание: {contacts[0][2]}\n\n"
+                           f"<b>{contacts[0][1]}</b>\n\n" \
+                           f"{contacts[0][2]}\n\n"
 
                 if edit:
-                    media = InputMediaPhoto(media=photo, caption=msg_text)
+                    media = InputMediaPhoto(media=photo, caption=msg_text, parse_mode="HTML")
                     await msg.edit_media(media=media, reply_markup=inline_keyboard)
                 else:
                     keyboard = await self.users_reply_keyboards.users_contacts_panel_keyboard()
 
                     await msg.answer_photo(photo=photo,
                                            caption=msg_text,
-                                           reply_markup=inline_keyboard)
+                                           reply_markup=inline_keyboard,
+                                           parse_mode="HTML")
 
                     await msg.answer(self.replicas['users']['other']['option'],
                                      reply_markup=keyboard)

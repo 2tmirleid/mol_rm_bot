@@ -24,11 +24,6 @@ async def process_admins_get_started(msg: Message) -> None:
     await main_admins_controller.admins_get_started(msg)
 
 
-@router.message(Command("getchatid"))
-async def process_admins_get_chat_id(msg: Message) -> None:
-    await main_admins_controller.admins_get_chat_id(msg=msg)
-
-
 @router.message(F.text == buttons['admin']['other']['to_main_panel'])
 @router.callback_query(F.data == callback_data['admin']['other']['to_main_panel'])
 async def process_get_admins_main_menu_panel(event: Message | CallbackQuery, state: FSMContext) -> None:

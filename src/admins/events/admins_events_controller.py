@@ -65,20 +65,21 @@ class AdminsEventsController:
                 photo = events[0][1]
 
                 msg_text = f"{offset + 1} из {pages}\n\n" \
-                           f"Название: {events[0][2]}\n\n" \
+                           f"Название: <b>{events[0][2]}</b>\n\n" \
                            f"Описание: {events[0][3]}\n\n" \
-                           f"Дата проведения: {events[0][4]}\n\n" \
+                           f"Дата проведения: <i><u>{events[0][4]}</u></i>\n\n" \
                            f"Ссылка: {events[0][5]}\n\n" \
                            f"Активность: {"Активно" if events[0][6]
                            else "Не активно"}"
 
                 if edit:
-                    media = InputMediaPhoto(media=photo, caption=msg_text)
+                    media = InputMediaPhoto(media=photo, caption=msg_text, parse_mode="HTML")
                     await msg.edit_media(media=media, reply_markup=keyboard)
                 else:
                     await msg.answer_photo(photo=photo,
                                            caption=msg_text,
-                                           reply_markup=keyboard)
+                                           reply_markup=keyboard,
+                                           parse_mode="HTML")
             else:
                 inline_callback_data = f"_events"
 

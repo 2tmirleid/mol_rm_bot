@@ -47,19 +47,20 @@ class UsersEventsController:
                 photo = events[0][0]
 
                 msg_text = f"{offset + 1} из {pages}\n\n" \
-                           f"Название: {events[0][1]}\n\n" \
-                           f"Описание: {events[0][2]}\n\n" \
-                           f"Дата проведения: {events[0][3]}"
+                           f"<b>{events[0][1]}</b>\n\n" \
+                           f"{events[0][2]}\n\n" \
+                           f"<i><u>{events[0][3]}</u></i>"
 
                 if edit:
-                    media = InputMediaPhoto(media=photo, caption=msg_text)
+                    media = InputMediaPhoto(media=photo, caption=msg_text, parse_mode="HTML")
                     await msg.edit_media(media=media, reply_markup=inline_keyboard)
                 else:
                     keyboard = await self.users_reply_keyboards.users_events_panel_keyboard()
 
                     await msg.answer_photo(photo=photo,
                                            caption=msg_text,
-                                           reply_markup=inline_keyboard)
+                                           reply_markup=inline_keyboard,
+                                           parse_mode="HTML")
 
                     await msg.answer(self.replicas['users']['other']['option'],
                                      reply_markup=keyboard)

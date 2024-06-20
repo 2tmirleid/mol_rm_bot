@@ -25,3 +25,6 @@ class MainUsersController:
 
         await msg.answer(self.replicas['users']['other']['option'],
                          reply_markup=keyboard)
+
+    async def users_get_chat_id(self, msg: Message) -> None:
+        await msg.answer(f"{msg.from_user.id}")

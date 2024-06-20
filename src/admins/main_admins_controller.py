@@ -35,9 +35,6 @@ class MainAdminsController:
         await msg.answer(f"{self.greeting['admin']}",
                          reply_markup=self.admins_reply_keyboards.main_admins_to_menu_panel_keyboard())
 
-    async def admins_get_chat_id(self, msg: Message) -> None:
-        await msg.answer(f"{msg.from_user.id}")
-
     async def get_main_admins_main_menu_panel(self, msg: Message) -> None:
         await msg.answer(f"{self.replicas['admin']['other']['option']}",
                          reply_markup=self.admins_reply_keyboards.main_admins_menu_panel_keyboard())
@@ -77,17 +74,18 @@ class MainAdminsController:
                 photo = admins[0][1]
 
                 msg_text = f"{offset + 1} из {pages}\n\n" \
-                           f"Имя: {admins[0][2]}\n\n" \
+                           f"Имя: <b>{admins[0][2]}</b>\n\n" \
                            f"Описание: {admins[0][3]}\n\n" \
                            f"Телефон: {admins[0][4]}\n\n" \
 
                 if edit:
-                    media = InputMediaPhoto(media=photo, caption=msg_text)
+                    media = InputMediaPhoto(media=photo, caption=msg_text, parse_mode="HTML")
                     await msg.edit_media(media=media, reply_markup=keyboard)
                 else:
                     await msg.answer_photo(photo=photo,
                                            caption=msg_text,
-                                           reply_markup=keyboard)
+                                           reply_markup=keyboard,
+                                           parse_mode="HTML")
             else:
                 inline_callback_data = f"_admins"
 

@@ -20,6 +20,11 @@ async def process_users_get_started(msg: Message) -> None:
     await main_users_controller.users_get_started(msg=msg)
 
 
+@router.message(Command("getchatid"))
+async def process_admins_get_chat_id(msg: Message) -> None:
+    await main_users_controller.users_get_chat_id(msg=msg)
+
+
 @router.message(F.text == buttons['users']['other']['to_main_panel'])
 @router.callback_query(F.data == callback_data['users']['other']['to_main_panel'])
 async def process_get_users_main_menu_panel(event: Message | CallbackQuery) -> None:
