@@ -1,6 +1,3 @@
-import os
-import re
-
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, InlineKeyboardMarkup, InputMediaPhoto
 from dotenv import load_dotenv, find_dotenv
@@ -79,13 +76,19 @@ class MainAdminsController:
                            f"Телефон: {admins[0][4]}\n\n" \
 
                 if edit:
-                    media = InputMediaPhoto(media=photo, caption=msg_text, parse_mode="HTML")
-                    await msg.edit_media(media=media, reply_markup=keyboard)
+                    if photo:
+                        media = InputMediaPhoto(media=photo, caption=msg_text, parse_mode="HTML")
+                        await msg.edit_media(media=media, reply_markup=keyboard)
+                    else:
+                        await msg.edit_text(text=msg_text, reply_markup=keyboard, parse_mode="HTML")
                 else:
-                    await msg.answer_photo(photo=photo,
-                                           caption=msg_text,
-                                           reply_markup=keyboard,
-                                           parse_mode="HTML")
+                    if photo:
+                        await msg.answer_photo(photo=photo,
+                                               caption=msg_text,
+                                               reply_markup=keyboard,
+                                               parse_mode="HTML")
+                    else:
+                        await msg.answer(text=msg_text, reply_markup=keyboard, parse_mode="HTML")
             else:
                 inline_callback_data = f"_admins"
 

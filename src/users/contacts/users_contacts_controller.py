@@ -54,15 +54,21 @@ class UsersContactsController:
                            f"{contacts[0][2]}\n\n"
 
                 if edit:
-                    media = InputMediaPhoto(media=photo, caption=msg_text, parse_mode="HTML")
-                    await msg.edit_media(media=media, reply_markup=inline_keyboard)
+                    if photo:
+                        media = InputMediaPhoto(media=photo, caption=msg_text, parse_mode="HTML")
+                        await msg.edit_media(media=media, reply_markup=inline_keyboard)
+                    else:
+                        await msg.edit_text(text=msg_text, reply_markup=inline_keyboard, parse_mode="HTML")
                 else:
                     keyboard = await self.users_reply_keyboards.users_contacts_panel_keyboard()
 
-                    await msg.answer_photo(photo=photo,
-                                           caption=msg_text,
-                                           reply_markup=inline_keyboard,
-                                           parse_mode="HTML")
+                    if photo:
+                        await msg.answer_photo(photo=photo,
+                                               caption=msg_text,
+                                               reply_markup=inline_keyboard,
+                                               parse_mode="HTML")
+                    else:
+                        await msg.answer(text=msg_text, reply_markup=inline_keyboard, parse_mode="HTML")
 
                     await msg.answer(self.replicas['users']['other']['option'],
                                      reply_markup=keyboard)
