@@ -25,3 +25,6 @@ class SelectForUsers:
 
     async def select_contacts_count(self) -> str:
         return """SELECT COUNT(*) FROM admins"""
+
+    async def select_program_description(self) -> str:
+        return """SELECT description FROM programs"""

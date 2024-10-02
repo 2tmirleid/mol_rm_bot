@@ -2,7 +2,8 @@ import os
 import re
 
 from aiogram.fsm.context import FSMContext
-from aiogram.types import Message, InlineKeyboardButton, InlineKeyboardMarkup, InputMediaPhoto
+from aiogram.types import Message, InlineKeyboardButton, InlineKeyboardMarkup, InputMediaPhoto, FSInputFile
+from aiogram.utils.media_group import MediaGroupBuilder
 from dotenv import load_dotenv, find_dotenv
 
 from src.admins.keyboards.inline.admins_inline_keyboards import AdminsInlineKeyboards
@@ -30,77 +31,120 @@ class AdminsProgramsController:
 
         self.validator: Validator = Validator()
 
-    async def admins_get_programs(self, msg: Message, offset=0, edit=False) -> None:
-        try:
-            programs = await self.admins_service.get_all_programs(offset=offset)
-            programs_count = await self.admins_service.get_programs_count()
+    async def admins_get_programs(self, msg: Message) -> None:
+        current_dir = os.path.dirname(os.path.abspath(__file__))
 
-            back_to_main_menu_btn = await (self.admins_inline_keyboards.
-                                           admins_dynamic_entity_to_main_menu_panel_keyboard())
+        file1 = os.path.join(current_dir, '..', '..', 'static', 'programs', '1.jpg')
+        file2 = os.path.join(current_dir, '..', '..', 'static', 'programs', '2.jpg')
+        file3 = os.path.join(current_dir, '..', '..', 'static', 'programs', '3.jpg')
+        file4 = os.path.join(current_dir, '..', '..', 'static', 'programs', '4.jpg')
 
-            pages = programs_count[0][0]
+        caption = await self.admins_service.get_program_description()
 
-            pagen_callback_data = f"_programs-{offset}"
+        media = MediaGroupBuilder(caption=caption[0][0])
 
-            if pages > 0:
-                inline_callback_data = f"_programs-{programs[0][0]}"
+        media.add_photo(FSInputFile(file1))
+        media.add_photo(FSInputFile(file2))
+        media.add_photo(FSInputFile(file3))
+        media.add_photo(FSInputFile(file4))
 
-                pagen = await self.pagen_builder.build_admin_pagen(
-                    pages=pages,
-                    offset=offset,
-                    callback_data=pagen_callback_data
-                )
+        await msg.answer_media_group(media=media.build())
+        # reply_parameters=keyboard)
 
-                buttons = await self.admins_inline_keyboards.admins_dynamic_entity_keyboard(
-                    callback_data=inline_callback_data
-                )
+        keyboard = [[InlineKeyboardButton(text='Редактировать текст',
+                                          callback_data='admins_edit_program_description')],
+                    await self.admins_inline_keyboards.admins_dynamic_entity_to_main_menu_panel_keyboard()]
 
-                keyboard = InlineKeyboardMarkup(
-                    inline_keyboard=[
-                        pagen,
-                        buttons,
-                        back_to_main_menu_btn
-                    ])
+        await msg.answer(self.replicas['admin']['other']['option'],
+                         reply_markup=InlineKeyboardMarkup(
+                             inline_keyboard=keyboard
+                         ))
 
-                photo = programs[0][1]
+    async def admins_edit_program_description(self, msg: Message, state: FSMContext) -> None:
+        await msg.answer(self.replicas['admin']['entities']['edit']['value'],
+                         reply_markup=await self.admins_inline_keyboards.admins_dynamic_entity_to_main_menu_panel_keyboard(markup=True))
 
-                msg_text = f"{offset + 1} из {pages}\n\n" \
-                           f"Название: <b>{programs[0][2]}</b>\n\n" \
-                           f"Описание: {programs[0][3]}\n\n" \
-                           f"Ссылка: {programs[0][4]}\n\n" \
-                           f"Активность: {"Активно" if programs[0][5]
-                                                    else "Не активно"}"
+        await state.set_state(EditProgramState.description)
 
-                if edit:
-                    media = InputMediaPhoto(media=photo, caption=msg_text, parse_mode="HTML")
-                    await msg.edit_media(media=media, reply_markup=keyboard)
-                else:
-                    await msg.answer_photo(photo=photo,
-                                           caption=msg_text,
-                                           reply_markup=keyboard,
-                                           parse_mode="HTML")
-            else:
-                inline_callback_data = f"_programs"
+    async def admins_edit_program_description_finish(self, msg: Message, state: FSMContext) -> None:
+        await state.update_data(description=msg.text)
 
-                create_button = await self.admins_inline_keyboards.admins_dynamic_create_entity_keyboard(
-                    callback_data=inline_callback_data
-                )
+        await self.admins_service.update_program_description(msg.text)
 
-                keyboard = InlineKeyboardMarkup(inline_keyboard=[
-                    create_button,
-                    back_to_main_menu_btn
-                ])
+        await msg.answer(self.replicas['admin']['entities']['edit']['finish'],
+                         reply_markup=await self.admins_inline_keyboards.admins_dynamic_entity_to_main_menu_panel_keyboard(markup=True))
 
-                await msg.answer(self.replicas['admin']['other']['empty'],
-                                 reply_markup=keyboard)
-        except Exception as e:
-            print(f"Error while getting programs by admin: {e}")
-
-            back_to_main_menu_btn = await (self.admins_inline_keyboards.
-                                           admins_dynamic_entity_to_main_menu_panel_keyboard(markup=True))
-
-            await msg.answer(self.replicas['general']['error'],
-                             reply_markup=back_to_main_menu_btn)
+    # async def admins_get_programs(self, msg: Message, offset=0, edit=False) -> None:
+    #     try:
+    #         programs = await self.admins_service.get_all_programs(offset=offset)
+    #         programs_count = await self.admins_service.get_programs_count()
+    #
+    #         back_to_main_menu_btn = await (self.admins_inline_keyboards.
+    #                                        admins_dynamic_entity_to_main_menu_panel_keyboard())
+    #
+    #         pages = programs_count[0][0]
+    #
+    #         pagen_callback_data = f"_programs-{offset}"
+    #
+    #         if pages > 0:
+    #             inline_callback_data = f"_programs-{programs[0][0]}"
+    #
+    #             pagen = await self.pagen_builder.build_admin_pagen(
+    #                 pages=pages,
+    #                 offset=offset,
+    #                 callback_data=pagen_callback_data
+    #             )
+    #
+    #             buttons = await self.admins_inline_keyboards.admins_dynamic_entity_keyboard(
+    #                 callback_data=inline_callback_data
+    #             )
+    #
+    #             keyboard = InlineKeyboardMarkup(
+    #                 inline_keyboard=[
+    #                     pagen,
+    #                     buttons,
+    #                     back_to_main_menu_btn
+    #                 ])
+    #
+    #             photo = programs[0][1]
+    #
+    #             msg_text = f"{offset + 1} из {pages}\n\n" \
+    #                        f"Название: <b>{programs[0][2]}</b>\n\n" \
+    #                        f"Описание: {programs[0][3]}\n\n" \
+    #                        f"Ссылка: {programs[0][4]}\n\n" \
+    #                        f"Активность: {"Активно" if programs[0][5]
+    #                                                 else "Не активно"}"
+    #
+    #             if edit:
+    #                 media = InputMediaPhoto(media=photo, caption=msg_text, parse_mode="HTML")
+    #                 await msg.edit_media(media=media, reply_markup=keyboard)
+    #             else:
+    #                 await msg.answer_photo(photo=photo,
+    #                                        caption=msg_text,
+    #                                        reply_markup=keyboard,
+    #                                        parse_mode="HTML")
+    #         else:
+    #             inline_callback_data = f"_programs"
+    #
+    #             create_button = await self.admins_inline_keyboards.admins_dynamic_create_entity_keyboard(
+    #                 callback_data=inline_callback_data
+    #             )
+    #
+    #             keyboard = InlineKeyboardMarkup(inline_keyboard=[
+    #                 create_button,
+    #                 back_to_main_menu_btn
+    #             ])
+    #
+    #             await msg.answer(self.replicas['admin']['other']['empty'],
+    #                              reply_markup=keyboard)
+    #     except Exception as e:
+    #         print(f"Error while getting programs by admin: {e}")
+    #
+    #         back_to_main_menu_btn = await (self.admins_inline_keyboards.
+    #                                        admins_dynamic_entity_to_main_menu_panel_keyboard(markup=True))
+    #
+    #         await msg.answer(self.replicas['general']['error'],
+    #                          reply_markup=back_to_main_menu_btn)
 
     async def admins_add_program_photo(self, msg: Message, state: FSMContext) -> None:
         back_to_main_menu_btn = await (self.admins_inline_keyboards.

@@ -23,3 +23,6 @@ class UpdateForAdmins:
 
     async def update_admin(self, admin_id: str, property: str, value: str) -> str:
         return f"""UPDATE admins SET {property} = '{value}' WHERE _id = '{admin_id}'"""
+
+    async def update_program_description(self, description: str) -> str:
+        return f"""UPDATE programs SET description = '{description}'"""

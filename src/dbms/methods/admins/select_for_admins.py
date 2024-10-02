@@ -40,3 +40,6 @@ class SelectForAdmins:
 
     async def select_admins_count(self) -> str:
         return """SELECT COUNT(*) FROM admins"""
+
+    async def select_program_description(self) -> str:
+        return """SELECT description FROM programs"""
