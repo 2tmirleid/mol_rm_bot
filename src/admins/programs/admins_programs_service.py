@@ -15,6 +15,26 @@ class AdminsProgramsService:
         self.delete_for_admins: DeleteForAdmins = DeleteForAdmins()
         self.update_for_admins: UpdateForAdmins = UpdateForAdmins()
 
+    async def update_program_description(self, description: str):
+        try:
+            self.cursor.execute(
+                await self.update_for_admins.update_program_description(description)
+            )
+
+            self.conn.commit()
+        except Exception as e:
+            print(f"Error while updating program from db: {e}")
+
+    async def get_program_description(self) -> list:
+        try:
+            self.cursor.execute(
+                await self.select_for_admins.select_program_description()
+            )
+
+            return self.cursor.fetchall()
+        except Exception as e:
+            print(f"Error while get program from db: {e}")
+
     async def get_all_programs(self, offset=0) -> list:
         try:
             self.cursor.execute(

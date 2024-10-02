@@ -30,6 +30,7 @@ class UsersReplyKeyboards:
                 ],
                 [
                     KeyboardButton(text=self.buttons['users']['main_panel']['contacts']),
+                    KeyboardButton(text=self.buttons['users']['main_panel']['support'])
                 ]
             ],
             resize_keyboard=True,
@@ -85,6 +86,23 @@ class UsersReplyKeyboards:
             keyboard=[
                 [KeyboardButton(text=ask_btn_text),
                  KeyboardButton(text=backward_btn_text)]
+            ],
+            resize_keyboard=True,
+            one_time_keyboard=True
+        )
+
+    async def users_support_menu(self) -> ReplyKeyboardMarkup:
+        backward_btn_text = self.buttons['users']['other']['to_main_panel']
+
+        return ReplyKeyboardMarkup(
+            keyboard=[
+                [KeyboardButton(text=self.buttons['users']['support']['team']),
+                 KeyboardButton(text=self.buttons['users']['support']['contacts'])],
+                [KeyboardButton(text=self.buttons['users']['support']['part']),
+                 KeyboardButton(text=self.buttons['users']['support']['schedule'])],
+                [KeyboardButton(text=self.buttons['users']['support']['places']),
+                 KeyboardButton(text=self.buttons['users']['support']['rules'])],
+                [KeyboardButton(text=backward_btn_text)]
             ],
             resize_keyboard=True,
             one_time_keyboard=True

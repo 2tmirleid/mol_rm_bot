@@ -16,6 +16,7 @@ from src.users.contacts import users_contacts_router
 from src.users.events import users_events_router
 from src.users.programs import users_programs_router
 from src.users.reservation import users_reservation_router
+from src.users.support import users_support_router
 from src.users.vacancies import users_vacancies_router
 from utils.ibot_engine_factory.factory import IBotEngineFactory
 
@@ -38,7 +39,8 @@ class Main:
                                          users_programs_router.router,
                                          users_vacancies_router.router,
                                          users_events_router.router,
-                                         users_contacts_router.router
+                                         users_contacts_router.router,
+                                         users_support_router.router
                                      ],
                                      models=[
                                          create_admins_model,
