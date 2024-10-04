@@ -18,7 +18,9 @@ class UsersSupportController:
     async def users_get_support_menu(self, msg: Message) -> None:
         keyboard = await self.users_reply_keyboards.users_support_menu()
 
-        await msg.answer(self.replicas['users']['other']['option'],
+        msg_text = 'Мы готовы ответить на все твои вопросы – обратная связь превыше всего. Быть может ты найдёшь ответы ниже, да, мы подготовились. А если не найдёшь, пиши нашим молодёжным администраторам в Телеграме или позвони по номеру телефона Молодёжного центра - 8 (8342) 34-30-00'
+
+        await msg.answer(msg_text,
                          reply_markup=keyboard)
 
     async def users_get_team_info(self, msg: Message) -> None:
@@ -33,11 +35,18 @@ class UsersSupportController:
         contacts_url_inline_keyboard = InlineKeyboardMarkup(
             inline_keyboard=[
                 [InlineKeyboardButton(text='Контакты команды #МолодёжьМордовии',
-                                      url='https://google.com/')]
+                                      url='https://mol-rm.ru/about/team/')],
+                [InlineKeyboardButton(text='Контакты администраторов #МолодёжьМордовии',
+                                      callback_data='temp')] # TODO
             ]
         )
 
-        await msg.answer(self.replicas['users']['other']['redirect'],
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+
+        png = FSInputFile(os.path.join(current_dir, '..', '..', 'static', 'contacts', 'temp_png.png'))
+
+        await msg.answer_photo(photo=png,
+                         caption=self.replicas['users']['contacts'],
                          reply_markup=contacts_url_inline_keyboard)
 
     async def users_get_part_info(self, msg: Message) -> None:
