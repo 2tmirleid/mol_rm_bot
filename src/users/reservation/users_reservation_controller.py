@@ -17,7 +17,7 @@ class UsersReservationController:
         keyboard = await self.users_inline_keyboards.users_redirect_to_reservation_keyboard()
         main_menu_keyboard = await self.users_reply_keyboards.main_users_to_menu_panel_keyboard()
 
-        await msg.answer(self.replicas['users']['other']['redirect'],
+        await msg.answer(self.replicas['users']['reservation'],
                          reply_markup=keyboard)
 
         await msg.answer(self.replicas['users']['other']['option'],

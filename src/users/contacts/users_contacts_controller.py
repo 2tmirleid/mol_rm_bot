@@ -1,4 +1,6 @@
-from aiogram.types import Message, InlineKeyboardMarkup, InputMediaPhoto, InlineKeyboardButton
+import os
+
+from aiogram.types import Message, InlineKeyboardMarkup, InputMediaPhoto, InlineKeyboardButton, FSInputFile
 
 from src.users.contacts.users_contacts_service import UsersContactsService
 from src.users.keyboards.inline.users_inline_keyboards import UsersInlineKeyboards
@@ -23,11 +25,18 @@ class UsersContactsController:
         contacts_url_inline_keyboard = InlineKeyboardMarkup(
             inline_keyboard=[
                 [InlineKeyboardButton(text='Контакты команды #МолодёжьМордовии',
-                                      url='https://google.com/')]
+                                      url='https://mol-rm.ru/about/team/')],
+                [InlineKeyboardButton(text='Контакты администраторов #МолодёжьМордовии',
+                                      callback_data='temp')] # TODO
             ]
         )
 
-        await msg.answer(self.replicas['users']['other']['redirect'],
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+
+        png = FSInputFile(os.path.join(current_dir, '..', '..', 'static', 'contacts', 'temp_png.png'))
+
+        await msg.answer_photo(photo=png,
+                         catpion=self.replicas['users']['contacts'],
                          reply_markup=contacts_url_inline_keyboard)
 
     # async def users_get_contacts(self, msg: Message, offset=0, edit=False) -> None:
