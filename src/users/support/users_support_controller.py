@@ -18,9 +18,10 @@ class UsersSupportController:
     async def users_get_support_menu(self, msg: Message) -> None:
         keyboard = await self.users_reply_keyboards.users_support_menu()
 
-        msg_text = 'Мы готовы ответить на все твои вопросы – обратная связь превыше всего. Быть может ты найдёшь ответы ниже, да, мы подготовились. А если не найдёшь, пиши нашим молодёжным администраторам в Телеграме или позвони по номеру телефона Молодёжного центра - 8 (8342) 34-30-00'
+        msg_text = 'Мы готовы ответить на все твои вопросы – обратная связь превыше всего. Быть может ты найдёшь ответы ниже, да, мы подготовились. А если не найдёшь, пиши нашим молодёжным администраторам в Телеграме или позвони по номеру телефона\nМолодёжного центра - <a href="tel:8 (8342) 34-30-00">8 (8342) 34-30-00</a>'
 
         await msg.answer(msg_text,
+                         parse_mode="HTML",
                          reply_markup=keyboard)
 
     async def users_get_team_info(self, msg: Message) -> None:
