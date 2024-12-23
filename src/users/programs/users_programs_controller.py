@@ -32,6 +32,8 @@ class UsersProgramsController:
 
         caption = await self.users_service.get_program_description()
 
+        # print(caption)
+
         media = MediaGroupBuilder(caption=caption[0][0])
 
         media.add_photo(FSInputFile(file1))

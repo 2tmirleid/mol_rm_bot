@@ -1,6 +1,7 @@
 import os
 
 from aiogram.types import Message, InlineKeyboardMarkup, InputMediaPhoto, InlineKeyboardButton, FSInputFile
+from aiogram.utils.media_group import MediaGroupBuilder
 
 from src.users.contacts.users_contacts_service import UsersContactsService
 from src.users.keyboards.inline.users_inline_keyboards import UsersInlineKeyboards
@@ -26,18 +27,34 @@ class UsersContactsController:
             inline_keyboard=[
                 [InlineKeyboardButton(text='Контакты команды #МолодёжьМордовии',
                                       url='https://mol-rm.ru/about/team/')],
-                [InlineKeyboardButton(text='Контакты администраторов #МолодёжьМордовии',
-                                      callback_data='temp')] # TODO
+                # [InlineKeyboardButton(text='Контакты администраторов #МолодёжьМордовии',
+                #                       callback_data='temp')] # TODO
+
+                await (self.users_inline_keyboards.
+                       users_dynamic_entity_to_main_menu_panel_keyboard())
             ]
         )
 
         current_dir = os.path.dirname(os.path.abspath(__file__))
 
-        png = FSInputFile(os.path.join(current_dir, '..', '..', 'static', 'contacts', 'temp_png.png'))
+        photo = FSInputFile(os.path.join(current_dir, '..', '..', 'static', 'contacts', '1.jpg'))
+        photo1 = FSInputFile(os.path.join(current_dir, '..', '..', 'static', 'contacts', '2.jpg'))
 
-        await msg.answer_photo(photo=png,
-                         catpion=self.replicas['users']['contacts'],
-                         reply_markup=contacts_url_inline_keyboard)
+        media = MediaGroupBuilder(caption=self.replicas['users']['contacts'])
+
+        media.add_photo(photo)
+        media.add_photo(photo1)
+
+        await msg.answer_media_group(media=media.build())
+
+        await msg.answer(
+            text=self.replicas['users']['other']['option'],
+            reply_markup=contacts_url_inline_keyboard
+        )
+
+        # await msg.answer_photo(photo=png,
+        #                  catpion=self.replicas['users']['contacts'],
+        #                  reply_markup=contacts_url_inline_keyboard)
 
     # async def users_get_contacts(self, msg: Message, offset=0, edit=False) -> None:
     #     try:

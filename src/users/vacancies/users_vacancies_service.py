@@ -9,6 +9,8 @@ class UsersVacanciesService:
 
         self.select_for_users: SelectForUsers = SelectForUsers()
 
+
+
     async def get_active_vacancies(self, offset=0) -> list:
         try:
             self.cursor.execute(

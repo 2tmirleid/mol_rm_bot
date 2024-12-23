@@ -30,7 +30,7 @@ class UsersReplyKeyboards:
                 ],
                 [
                     KeyboardButton(text=self.buttons['users']['main_panel']['contacts']),
-                    KeyboardButton(text=self.buttons['users']['main_panel']['support'])
+                    # KeyboardButton(text=self.buttons['users']['main_panel']['support'])
                 ]
             ],
             resize_keyboard=True,
