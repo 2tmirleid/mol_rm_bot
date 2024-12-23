@@ -24,14 +24,15 @@ class UsersEventsController:
     async def users_get_active_events(self, msg: Message) -> None:
         current_dir = os.path.dirname(os.path.abspath(__file__))
 
-        png = FSInputFile(os.path.join(current_dir, '..', '..', 'static', 'events', 'temp_png.png'))
+        # png = FSInputFile(os.path.join(current_dir, '..', '..', 'static', 'events', 'temp_png.png'))
+        png = FSInputFile(os.path.join(current_dir, '..', '..', 'static', 'events', '1.jpg'))
 
         await msg.answer_photo(photo=png,
                                caption='Не упусти Событие – стань его частью',
                                reply_markup=InlineKeyboardMarkup(
                                    inline_keyboard=[
-                                       [InlineKeyboardButton(text='Увидеть события на сайте',
-                                                             url='https://mol-rm.ru/events/news/')],
+                                       [InlineKeyboardButton(text='Календарь событий',
+                                                             url='https://mol-rm.ru/events/main/')],
                                        [InlineKeyboardButton(text='Следить за событиями в сообществе ВКонтакте',
                                                              url='https://vk.com/mol13rus/')],
                                        [InlineKeyboardButton(text='Следить за событиями в сообществе в Телеграм-канале',

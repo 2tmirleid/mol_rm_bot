@@ -1,3 +1,5 @@
+from psycopg2.extras import DictCursor
+
 from src.dbms.connection import cursor, conn
 from src.dbms.methods.users.select_for_users import SelectForUsers
 
@@ -9,12 +11,26 @@ class UsersProgramsService:
 
         self.select_for_users: SelectForUsers = SelectForUsers()
 
-    async def get_program_description(self) -> list:
-        self.cursor.execute(
-            await self.select_for_users.select_program_description()
-        )
+    # Пробный фикс
+    async def exec(self, query: str, fetch=False, commit=False):
+        with self.conn.cursor(cursor_factory=DictCursor) as dict_cursor:
+            dict_cursor.execute(query)
 
-        return self.cursor.fetchall()
+            if fetch:
+                return dict_cursor.fetchall()
+            if commit:
+                return self.conn.commit()
+
+    async def get_program_description(self) -> list:
+        # self.conn.cursor.execute(
+        #     await self.select_for_users.select_program_description()
+        # )
+        #
+        # return self.cursor.fetchall()
+
+        query = await self.select_for_users.select_program_description()
+
+        return await self.exec(query=query, fetch=True)
 
     async def get_active_programs(self, offset=0) -> list:
         try:
