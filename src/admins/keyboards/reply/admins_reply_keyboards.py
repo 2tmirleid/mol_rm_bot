@@ -34,7 +34,7 @@ class AdminsReplyKeyboards:
         return ReplyKeyboardMarkup(
             keyboard=[
                 [
-                    KeyboardButton(text=f"{self.buttons['admin']['main_panel']['programs']}"),
+                    # KeyboardButton(text=f"{self.buttons['admin']['main_panel']['programs']}"),
                     KeyboardButton(text=f"{self.buttons["admin"]["main_panel"]["events"]}")
                 ],
                 [

@@ -30,11 +30,15 @@ class UsersProgramsController:
         file3 = os.path.join(current_dir, '..', '..', 'static', 'programs', '3.jpg')
         file4 = os.path.join(current_dir, '..', '..', 'static', 'programs', '4.jpg')
 
-        caption = await self.users_service.get_program_description()
+        # caption = await self.users_service.get_program_description()
+        caption = ("И это одна из самых интересных молодёжных программ на этот год. "
+                   "Мы предлагаем вам стать Амбассадорами нашей команды – проводниками молодых в "
+                   "нашу событийную историю. "
+                   "Но чтобы войти в состав команды проводников, нужно представиться…")
 
         # print(caption)
 
-        media = MediaGroupBuilder(caption=caption[0][0])
+        media = MediaGroupBuilder(caption=caption)
 
         media.add_photo(FSInputFile(file1))
         media.add_photo(FSInputFile(file2))
@@ -42,7 +46,7 @@ class UsersProgramsController:
         media.add_photo(FSInputFile(file4))
 
         await msg.answer_media_group(media=media.build())
-        # reply_parameters=keyboard)
+        # reply_parameters=keyboard
 
         keyboard = [
             [InlineKeyboardButton(text='Рассказать о себе', callback_data='users_program_tell_about')],
