@@ -58,8 +58,8 @@ class UsersReplyKeyboards:
         return ReplyKeyboardMarkup(
             keyboard=[
                 [KeyboardButton(text=take_part_btn_text),
-                 KeyboardButton(text=partners_btn_text)],
-                [KeyboardButton(text=backward_btn_text)]
+                 # KeyboardButton(text=partners_btn_text)],
+                KeyboardButton(text=backward_btn_text)]
             ],
             resize_keyboard=True,
             one_time_keyboard=True
