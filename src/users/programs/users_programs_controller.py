@@ -50,7 +50,7 @@ class UsersProgramsController:
 
         keyboard = [
             [InlineKeyboardButton(text='Рассказать о себе', callback_data='users_program_tell_about')],
-            [InlineKeyboardButton(text='Положение о Конкурсной программе', callback_data='users_program_get_file')],
+            # [InlineKeyboardButton(text='Положение о Конкурсной программе', callback_data='users_program_get_file')],
             await self.users_inline_keyboards.users_dynamic_entity_to_main_menu_panel_keyboard()
         ]
 
@@ -65,7 +65,7 @@ class UsersProgramsController:
             reply_markup=InlineKeyboardMarkup(
                 inline_keyboard=[
                     [InlineKeyboardButton(text='Загрузить видео-визитку',
-                                          url='https://google.com/')],
+                                          url='https://forms.yandex.ru/u/6790edb902848f5f77e55699/')],
                     await self.users_inline_keyboards.users_dynamic_entity_to_main_menu_panel_keyboard()
                 ])
             )
