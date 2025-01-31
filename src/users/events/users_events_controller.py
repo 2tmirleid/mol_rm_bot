@@ -27,14 +27,14 @@ class UsersEventsController:
 
         # png = FSInputFile(os.path.join(current_dir, '..', '..', 'static', 'events', 'temp_png.png'))
         file = FSInputFile(os.path.join(current_dir, '..', '..', 'static', 'events', '1.jpg'))
-        file1 = FSInputFile(os.path.join(current_dir, '..', '..', 'static', 'events', '2.jpg'))
+        # file1 = FSInputFile(os.path.join(current_dir, '..', '..', 'static', 'events', '2.jpg'))
 
         caption = "Не упусти Событие – стань его частью"
 
         media = MediaGroupBuilder(caption=caption)
 
         media.add_photo(file)
-        media.add_photo(file1)
+        # media.add_photo(file1)
 
         await msg.answer_media_group(media=media.build())
 
